@@ -3,87 +3,86 @@ description: "Report a safety model, authorization boundary, or governance docum
 title: "[Security Model]: "
 
 body:
+  - type: dropdown
+    id: security-model-area
+    attributes:
+      label: "Security model area"
+      description: "Which area does this issue affect?"
+      options:
+        - "Scope validation"
+        - "Target allowlist"
+        - "Forbidden target handling"
+        - "Approval workflow"
+        - "Restricted action policy"
+        - "Role-based access"
+        - "Audit logging"
+        - "Evidence handling"
+        - "LLM assistance boundary"
+        - "Telemetry review"
+        - "Documentation wording"
+        - "Other"
+    validations:
+      required: true
 
-* type: dropdown
-  id: security-model-area
-  attributes:
-  label: "Security model area"
-  description: "Which area does this issue affect?"
-  options:
-  - "Scope validation"
-  - "Target allowlist"
-  - "Forbidden target handling"
-  - "Approval workflow"
-  - "Restricted action policy"
-  - "Role-based access"
-  - "Audit logging"
-  - "Evidence handling"
-  - "LLM assistance boundary"
-  - "Telemetry review"
-  - "Documentation wording"
-  - "Other"
-  validations:
-  required: true
+  - type: textarea
+    id: issue-summary
+    attributes:
+      label: "Issue summary"
+      description: "Describe the security model issue or improvement."
+      placeholder: "Explain what should be changed and why."
+    validations:
+      required: true
 
-* type: textarea
-  id: issue-summary
-  attributes:
-  label: "Issue summary"
-  description: "Describe the security model issue or improvement."
-  placeholder: "Explain what should be changed and why."
-  validations:
-  required: true
+  - type: textarea
+    id: affected-documents
+    attributes:
+      label: "Affected documents"
+      description: "List the documents related to this issue."
+      placeholder: "docs/safety-model.md"
+    validations:
+      required: true
 
-* type: textarea
-  id: affected-documents
-  attributes:
-  label: "Affected documents"
-  description: "List the documents related to this issue."
-  placeholder: "docs/safety-model.md"
-  validations:
-  required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: "Expected behavior"
+      description: "Describe the expected policy, validation, approval, or review behavior."
+      placeholder: "Explain the expected behavior."
+    validations:
+      required: false
 
-* type: textarea
-  id: expected-behavior
-  attributes:
-  label: "Expected behavior"
-  description: "Describe the expected policy, validation, approval, or review behavior."
-  placeholder: "Explain the expected behavior."
-  validations:
-  required: false
+  - type: textarea
+    id: proposed-update
+    attributes:
+      label: "Proposed update"
+      description: "Provide suggested wording or model changes if available."
+      placeholder: "Paste the suggested update here."
+    validations:
+      required: false
 
-* type: textarea
-  id: proposed-update
-  attributes:
-  label: "Proposed update"
-  description: "Provide suggested wording or model changes if available."
-  placeholder: "Paste the suggested update here."
-  validations:
-  required: false
+  - type: textarea
+    id: safety-impact
+    attributes:
+      label: "Safety impact"
+      description: "Describe authorization, scope, approval, audit, evidence, LLM, or misuse considerations."
+      placeholder: "Explain the safety impact."
+    validations:
+      required: true
 
-* type: textarea
-  id: safety-impact
-  attributes:
-  label: "Safety impact"
-  description: "Describe authorization, scope, approval, audit, evidence, LLM, or misuse considerations."
-  placeholder: "Explain the safety impact."
-  validations:
-  required: true
+  - type: textarea
+    id: public-safety-confirmation
+    attributes:
+      label: "Public safety confirmation"
+      description: "Confirm that this issue is safe to post publicly."
+      placeholder: "Confirmed. This issue does not include credentials, secrets, private logs, client data, exploit code, payloads, evasion detail, or unsafe operational detail."
+    validations:
+      required: true
 
-* type: textarea
-  id: public-safety-confirmation
-  attributes:
-  label: "Public safety confirmation"
-  description: "Confirm that this issue is safe to post publicly."
-  placeholder: "Confirmed. This issue does not include credentials, secrets, private logs, client data, exploit code, payloads, evasion detail, or unsafe operational detail."
-  validations:
-  required: true
-
-* type: textarea
-  id: additional-context
-  attributes:
-  label: "Additional context"
-  description: "Add any other context that may help reviewers."
-  placeholder: "Add context here."
-  validations:
-  required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Additional context"
+      description: "Add any other context that may help reviewers."
+      placeholder: "Add context here."
+    validations:
+      required: false
