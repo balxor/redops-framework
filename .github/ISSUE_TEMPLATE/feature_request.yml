@@ -1,10 +1,9 @@
-name: Feature Request
-description: Suggest a new capability, module, workflow, schema, or documentation improvement.
-title: "[Feature]:"
-labels:
+name: "Feature Request"
+description: "Suggest a new capability, module, workflow, schema, or documentation improvement."
+title: "[Feature]: "
+labels: ["enhancement"]
 
-* enhancement
-  body:
+body:
 
 * type: markdown
   attributes:
@@ -14,61 +13,61 @@ labels:
   ```
   Keep the request aligned with authorized pentest and red team workflow management.
 
-  Do not include credentials, tokens, private keys, real client data, private logs, internal IP addresses, exploit code, payloads, evasion details, or destructive workflow instructions.
+  Public issues must not include private project data, client data, sensitive logs, unsafe operational detail, or real environment information.
   ```
 
 * type: dropdown
-  id: feature_area
+  id: feature-area
   attributes:
-  label: Feature Area
-  description: Which area does this feature affect?
+  label: "Feature area"
+  description: "Which area does this feature affect?"
   options:
-  - Project Workspace
-  - Scope Manager
-  - Asset Registry
-  - ATT&CK Registry
-  - Campaign Planner
-  - Action Log
-  - Evidence Vault
-  - Finding Manager
-  - Report Builder
-  - Safety Gate
-  - Telemetry Model
-  - LLM Assistance
-  - Audit Trail
-  - API
-  - Schema
-  - Template
-  - Documentation
-  - Other
+  - "Project Workspace"
+  - "Scope Manager"
+  - "Asset Registry"
+  - "ATTACK Registry"
+  - "Campaign Planner"
+  - "Action Log"
+  - "Evidence Vault"
+  - "Finding Manager"
+  - "Report Builder"
+  - "Safety Gate"
+  - "Telemetry Model"
+  - "LLM Assistance"
+  - "Audit Trail"
+  - "API"
+  - "Schema"
+  - "Template"
+  - "Documentation"
+  - "Other"
   validations:
   required: true
 
 * type: textarea
-  id: problem
+  id: problem-description
   attributes:
-  label: Problem
-  description: What problem should this feature solve?
-  placeholder: Describe the workflow gap, documentation gap, or product need.
+  label: "Problem description"
+  description: "What problem should this feature solve?"
+  placeholder: "Describe the workflow gap, documentation gap, or product need."
   validations:
   required: true
 
 * type: textarea
-  id: proposed_solution
+  id: proposed-change
   attributes:
-  label: Proposed Solution
-  description: Describe the feature or improvement.
-  placeholder: Explain what should be added or changed.
+  label: "Proposed change"
+  description: "Describe the feature or improvement."
+  placeholder: "Explain what should be added or changed."
   validations:
   required: true
 
 * type: textarea
-  id: expected_workflow
+  id: expected-workflow
   attributes:
-  label: Expected Workflow
-  description: Describe how the feature should work from a user perspective.
+  label: "Expected workflow"
+  description: "Describe how the feature should work from a user perspective."
   placeholder: |
-  1. User creates or opens a project.
+  1. User opens a project.
   2. User selects the relevant module.
   3. User completes the workflow.
   4. The framework records the result.
@@ -76,71 +75,50 @@ labels:
   required: false
 
 * type: dropdown
-  id: priority
+  id: priority-level
   attributes:
-  label: Priority
-  description: How important is this feature?
+  label: "Priority level"
+  description: "How important is this feature?"
   options:
-  - Low
-  - Medium
-  - High
-  - Critical
+  - "Low"
+  - "Medium"
+  - "High"
+  - "Critical"
   validations:
   required: true
 
 * type: dropdown
-  id: version_target
+  id: target-version
   attributes:
-  label: Suggested Version Target
-  description: Which roadmap version should this belong to?
+  label: "Target version"
+  description: "Which roadmap version should this belong to?"
   options:
-  - v0.1 Community Draft
-  - v0.2 Framework Specification
-  - v0.3 Operations Workflow
-  - v0.4 Governance Model
-  - v0.5 LLM Assistance
-  - v0.6 Safe Validation Model
-  - v0.7 Telemetry Model
-  - v1.0 Stable Framework Specification
-  - Not sure
+  - "v0.1 Community Draft"
+  - "v0.2 Framework Specification"
+  - "v0.3 Operations Workflow"
+  - "v0.4 Governance Model"
+  - "v0.5 LLM Assistance"
+  - "v0.6 Safe Validation Model"
+  - "v0.7 Telemetry Model"
+  - "v1.0 Stable Framework Specification"
+  - "Unassigned"
   validations:
   required: false
 
 * type: textarea
-  id: safety_impact
+  id: safety-considerations
   attributes:
-  label: Safety Impact
-  description: Describe any safety, authorization, scope, approval, or misuse considerations.
-  placeholder: Explain whether this feature affects scope validation, approvals, audit logs, evidence handling, or LLM boundaries.
+  label: "Safety considerations"
+  description: "Describe authorization, scope, approval, audit, evidence handling, or misuse considerations."
+  placeholder: "Explain any safety impact or write Not applicable."
   validations:
   required: true
 
-* type: checkboxes
-  id: safety_check
-  attributes:
-  label: Safety Check
-  description: Confirm that this request is safe to discuss publicly.
-  options:
-  - label: This request is for authorized security workflow management.
-  required: true
-  - label: This request does not include unauthorized exploitation instructions.
-  required: true
-  - label: This request does not include credential theft procedures.
-  required: true
-  - label: This request does not include malware code.
-  required: true
-  - label: This request does not include evasion or bypass instructions.
-  required: true
-  - label: This request does not include destructive workflow instructions.
-  required: true
-  - label: This request does not include real client data, credentials, tokens, private keys, private logs, or secrets.
-  required: true
-
 * type: textarea
-  id: data_model
+  id: data-model-notes
   attributes:
-  label: Data Model Notes
-  description: List any new fields, entities, status values, or schema changes needed.
+  label: "Data model notes"
+  description: "List any new fields, entities, status values, or schema changes needed."
   placeholder: |
   New entity:
   New fields:
@@ -150,10 +128,10 @@ labels:
   required: false
 
 * type: textarea
-  id: api_notes
+  id: api-notes
   attributes:
-  label: API Notes
-  description: List any API endpoints or request/response changes if relevant.
+  label: "API notes"
+  description: "List any API endpoints or request and response changes if relevant."
   placeholder: |
   GET /api/v1/example
   POST /api/v1/example
@@ -161,28 +139,37 @@ labels:
   required: false
 
 * type: textarea
-  id: llm_notes
+  id: llm-notes
   attributes:
-  label: LLM Assistance Notes
-  description: Describe whether this feature affects LLM-assisted workflow.
-  placeholder: Explain supported LLM tasks, restricted tasks, validation requirements, and review requirements.
+  label: "LLM notes"
+  description: "Describe whether this feature affects LLM-assisted workflow."
+  placeholder: "Explain supported tasks, restricted tasks, validation requirements, and review requirements."
   validations:
   required: false
 
 * type: textarea
-  id: alternatives
+  id: alternatives-considered
   attributes:
-  label: Alternatives
-  description: Describe alternatives that were considered.
-  placeholder: Add alternatives here, or write "None".
+  label: "Alternatives considered"
+  description: "Describe alternatives that were considered."
+  placeholder: "Add alternatives here."
   validations:
   required: false
 
-* type: textarea
-  id: additional_context
+* type: checkboxes
+  id: public-request-check
   attributes:
-  label: Additional Context
-  description: Add any other context that may help reviewers.
-  placeholder: Add context here, or write "None".
+  label: "Public request confirmation"
+  description: "Confirm that this request is safe to post publicly."
+  options:
+  - label: "I confirm this request uses only public or placeholder information."
+  required: true
+
+* type: textarea
+  id: additional-context
+  attributes:
+  label: "Additional context"
+  description: "Add any other context that may help reviewers."
+  placeholder: "Add context here."
   validations:
   required: false

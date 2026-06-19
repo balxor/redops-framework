@@ -1,10 +1,9 @@
-name: Documentation
-description: Report a documentation issue or suggest a documentation improvement.
-title: "[Docs]:"
-labels:
+name: "Documentation"
+description: "Report a documentation issue or suggest a documentation improvement."
+title: "[Docs]: "
+labels: ["documentation"]
 
-* documentation
-  body:
+body:
 
 * type: markdown
   attributes:
@@ -12,95 +11,89 @@ labels:
   Use this form for documentation issues, unclear wording, missing sections, broken links, inconsistent terminology, or example improvements.
 
   ```
-  Do not include credentials, tokens, private keys, real client data, private logs, internal IP addresses, or sensitive vulnerability details.
+  Public issues must not include private project data, client data, sensitive logs, unsafe operational detail, or real environment information.
   ```
 
 * type: input
-  id: document
+  id: document-path
   attributes:
-  label: Document
-  description: Which document needs review?
-  placeholder: docs/safety-model.md
+  label: "Document path"
+  description: "Which document should be reviewed?"
+  placeholder: "docs/safety-model.md"
   validations:
   required: true
 
 * type: dropdown
-  id: issue_type
+  id: documentation-area
   attributes:
-  label: Issue Type
-  description: Select the type of documentation issue.
+  label: "Documentation area"
+  description: "Select the closest documentation issue type."
   options:
-  - Missing information
-  - Unclear wording
-  - Incorrect information
-  - Inconsistent terminology
-  - Broken link
-  - Formatting issue
-  - Example improvement
-  - Template improvement
-  - Other
+  - "Missing information"
+  - "Unclear wording"
+  - "Incorrect information"
+  - "Inconsistent terminology"
+  - "Broken link"
+  - "Formatting issue"
+  - "Example improvement"
+  - "Template improvement"
+  - "Other"
   validations:
   required: true
 
 * type: textarea
-  id: summary
+  id: documentation-summary
   attributes:
-  label: Summary
-  description: Describe the documentation issue or improvement.
-  placeholder: Explain what should be changed and why.
+  label: "Documentation summary"
+  description: "Describe the issue or improvement."
+  placeholder: "Explain what should be changed and why."
   validations:
   required: true
 
 * type: textarea
-  id: current_text
+  id: current-content
   attributes:
-  label: Current Text
-  description: Paste the current text if relevant.
-  placeholder: Paste the current wording here.
+  label: "Current content"
+  description: "Paste the current wording if relevant."
+  placeholder: "Paste the current wording here."
   validations:
   required: false
 
 * type: textarea
-  id: suggested_text
+  id: suggested-update
   attributes:
-  label: Suggested Text
-  description: Provide suggested replacement text if available.
-  placeholder: Paste the suggested wording here.
+  label: "Suggested update"
+  description: "Provide suggested replacement text if available."
+  placeholder: "Paste the suggested wording here."
   validations:
   required: false
 
 * type: textarea
-  id: related_files
+  id: related-files
   attributes:
-  label: Related Files
-  description: List related files that may need updates.
+  label: "Related files"
+  description: "List related files that may need updates."
   placeholder: |
-  - docs/glossary.md
-  - docs/safety-model.md
-  - README.md
+  docs/glossary.md
+  docs/safety-model.md
+  README.md
   validations:
   required: false
 
 * type: checkboxes
-  id: safety_check
+  id: public-report-check
   attributes:
-  label: Safety Check
-  description: Confirm that this issue does not include sensitive or unsafe content.
+  label: "Public report confirmation"
+  description: "Confirm that this issue is safe to post publicly."
   options:
-  - label: This issue does not include credentials, tokens, private keys, or secrets.
-  required: true
-  - label: This issue does not include real client data.
-  required: true
-  - label: This issue does not include private logs or internal network data.
-  required: true
-  - label: This issue does not include unauthorized exploitation instructions.
+  - label: "I confirm this issue uses only public or placeholder information."
   required: true
 
 * type: textarea
-  id: additional_context
+  id: additional-context
   attributes:
-  label: Additional Context
-  description: Add any other context that may help reviewers.
-  placeholder: Add context here, or write "None".
+  label: "Additional context"
+  description: "Add any other context that may help reviewers."
+  placeholder: "Add context here."
   validations:
   required: false
