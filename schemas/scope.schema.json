@@ -1,43 +1,270 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/redops-framework/schemas/scope.schema.json",
-  "title": "Scope",
-  "type": "object",
-  "required": ["scope_id", "project_id", "status", "approved_targets"],
-  "properties": {
-    "scope_id": { "type": "string", "minLength": 1 },
-    "project_id": { "type": "string", "minLength": 1 },
-    "status": {
-      "type": "string",
-      "enum": ["draft", "approved", "active", "expired", "archived"]
-    },
-    "approved_targets": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/target" }
-    },
-    "excluded_targets": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/target" }
-    },
-    "test_windows": { "type": "array", "items": { "type": "object" } },
-    "approvals": { "type": "array", "items": { "type": "object" } }
-  },
-  "$defs": {
-    "target": {
-      "type": "object",
-      "required": ["value", "type"],
-      "properties": {
-        "value": { "type": "string", "minLength": 1 },
-        "type": {
-          "type": "string",
-          "enum": ["domain", "ip_address", "url", "application", "network", "other"]
-        },
-        "environment": { "type": "string" },
-        "notes": { "type": "string" },
-        "reason": { "type": "string" }
-      },
-      "additionalProperties": true
-    }
-  },
-  "additionalProperties": true
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://redops-framework.local/schemas/scope.schema.json",
+"title": "RedOps Scope",
+"description": "Schema for a RedOps Framework project scope record.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"project_id",
+"allowed_targets",
+"forbidden_targets",
+"test_window",
+"status",
+"approval_required"
+],
+"properties": {
+"scope_id": {
+"$ref": "#/$defs/identifier"
+},
+"project_id": {
+"$ref": "#/$defs/identifier"
+},
+"status": {
+"type": "string",
+"description": "Current scope lifecycle status.",
+"enum": [
+"draft",
+"pending_review",
+"approved",
+"expired",
+"revoked"
+],
+"default": "draft"
+},
+"allowed_targets": {
+"type": "array",
+"description": "Targets approved for this project scope.",
+"items": {
+"$ref": "#/$defs/target"
+},
+"minItems": 1
+},
+"forbidden_targets": {
+"type": "array",
+"description": "Targets explicitly excluded from this project scope.",
+"items": {
+"$ref": "#/$defs/target"
+},
+"default": []
+},
+"test_window": {
+"$ref": "#/$defs/test_window"
+},
+"rules_of_engagement": {
+"type": "string",
+"description": "Approved rules of engagement summary.",
+"minLength": 1,
+"maxLength": 8000
+},
+"restricted_actions": {
+"type": "array",
+"description": "Action categories that require explicit approval.",
+"items": {
+"$ref": "#/$defs/restricted_action"
+},
+"uniqueItems": true,
+"default": []
+},
+"approval_required": {
+"type": "boolean",
+"description": "Whether approval is required before controlled or restricted workflow is accepted.",
+"default": true
+},
+"emergency_contact": {
+"$ref": "#/$defs/contact"
+},
+"reviewed_by": {
+"$ref": "#/$defs/identifier"
+},
+"approved_by": {
+"$ref": "#/$defs/identifier"
+},
+"approved_at": {
+"$ref": "#/$defs/date_time"
+},
+"expires_at": {
+"$ref": "#/$defs/date_time"
+},
+"notes": {
+"type": "string",
+"description": "Non-sensitive scope notes.",
+"maxLength": 4000
+},
+"created_by": {
+"$ref": "#/$defs/identifier"
+},
+"updated_by": {
+"$ref": "#/$defs/identifier"
+},
+"created_at": {
+"$ref": "#/$defs/date_time"
+},
+"updated_at": {
+"$ref": "#/$defs/date_time"
+},
+"metadata": {
+"type": "object",
+"description": "Optional non-sensitive scope metadata.",
+"additionalProperties": {
+"type": [
+"string",
+"number",
+"boolean",
+"null"
+]
+},
+"default": {}
+}
+},
+"$defs": {
+"identifier": {
+"type": "string",
+"description": "Stable identifier.",
+"pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,127}$"
+},
+"date_time": {
+"type": "string",
+"description": "UTC timestamp in ISO 8601 format.",
+"format": "date-time"
+},
+"target": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"type",
+"value"
+],
+"properties": {
+"type": {
+"type": "string",
+"enum": [
+"ip_address",
+"ip_range",
+"domain",
+"subdomain",
+"url",
+"cloud_account",
+"repository",
+"wireless_network",
+"application",
+"api",
+"identity_tenant",
+"lab_environment"
+]
+},
+"value": {
+"type": "string",
+"minLength": 1,
+"maxLength": 500
+},
+"environment": {
+"type": "string",
+"enum": [
+"production",
+"staging",
+"development",
+"lab",
+"unknown"
+],
+"default": "unknown"
+},
+"description": {
+"type": "string",
+"maxLength": 1000
+},
+"tags": {
+"type": "array",
+"items": {
+"$ref": "#/$defs/tag"
+},
+"uniqueItems": true,
+"default": []
+}
+}
+},
+"test_window": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"start",
+"end"
+],
+"properties": {
+"start": {
+"$ref": "#/$defs/date_time"
+},
+"end": {
+"$ref": "#/$defs/date_time"
+},
+"timezone": {
+"type": "string",
+"description": "IANA timezone name.",
+"minLength": 1,
+"maxLength": 100,
+"examples": [
+"Asia/Jakarta"
+]
+}
+}
+},
+"restricted_action": {
+"type": "string",
+"enum": [
+"safe_validation_workflow",
+"exploit_validation",
+"credential_exposure_validation",
+"persistence_validation",
+"lateral_movement_validation",
+"egress_telemetry_validation",
+"external_tool_execution",
+"production_environment_validation"
+]
+},
+"contact": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"name",
+"role"
+],
+"properties": {
+"name": {
+"type": "string",
+"minLength": 1,
+"maxLength": 200
+},
+"role": {
+"type": "string",
+"enum": [
+"project_owner",
+"technical_contact",
+"emergency_contact",
+"client_contact",
+"lead_operator",
+"reviewer",
+"other"
+]
+},
+"email": {
+"type": "string",
+"format": "email"
+},
+"phone": {
+"type": "string",
+"maxLength": 100
+},
+"notes": {
+"type": "string",
+"maxLength": 1000
+}
+}
+},
+"tag": {
+"type": "string",
+"minLength": 1,
+"maxLength": 64,
+"pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}$"
+}
+}
 }
