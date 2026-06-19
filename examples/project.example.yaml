@@ -1,0 +1,20 @@
+project_id: example-project
+name: Example Authorized Assessment
+status: draft
+engagement_type: authorized_security_assessment
+owner:
+  organization: Example Organization
+  primary_contact: security@example.com
+dates:
+  start: 2026-07-01
+  end: 2026-07-05
+roles:
+  lead_operator: operator@example.com
+  reviewer: reviewer@example.com
+summary: >
+  Sanitized example project for documenting authorized scope, assets,
+  campaign planning, evidence, findings, and reporting.
+safety:
+  rules_of_engagement_required: true
+  approval_required_for_restricted_actions: true
+  public_examples_must_be_sanitized: true

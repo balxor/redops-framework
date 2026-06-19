@@ -56,7 +56,7 @@ The initial version is documentation-first. Implementation work should follow af
 
 Initial modules:
 
-```text id="70axch"
+```text
 Project Workspace
 Scope Manager
 Asset Registry
@@ -337,7 +337,7 @@ Included sections:
 
 Initial output formats:
 
-```text id="dp9yet"
+```text
 markdown
 html
 pdf
@@ -345,7 +345,7 @@ pdf
 
 Future output format:
 
-```text id="9zcezm"
+```text
 docx
 ```
 
@@ -401,7 +401,7 @@ Included:
 
 Detection status values:
 
-```text id="3jasbc"
+```text
 unknown
 detected
 not_detected
@@ -490,7 +490,7 @@ Excluded from early versions:
 
 Main workflow:
 
-```text id="0eacoz"
+```text
 Create project
   |
   v
@@ -538,7 +538,7 @@ Archive project
 
 Admin workflow:
 
-```text id="sidtdi"
+```text
 Create users
 Assign roles
 Review system settings
@@ -551,7 +551,7 @@ Manage repository-level configuration
 
 Lead Operator workflow:
 
-```text id="q1ubpx"
+```text
 Create project
 Define scope
 Register assets
@@ -566,7 +566,7 @@ Close project
 
 Operator workflow:
 
-```text id="iiu6fm"
+```text
 Review assigned project
 Review scope
 Record action
@@ -580,7 +580,7 @@ Add cleanup notes
 
 Reviewer workflow:
 
-```text id="rq2fay"
+```text
 Review evidence
 Review finding
 Check scope alignment
@@ -593,7 +593,7 @@ Approve or return for revision
 
 Client Viewer workflow:
 
-```text id="tz1ntd"
+```text
 View final report
 View approved summary
 Review remediation plan
@@ -606,7 +606,7 @@ Review limitations
 
 ### Project Status
 
-```text id="v6yyoy"
+```text
 draft
 active
 paused
@@ -616,7 +616,7 @@ archived
 
 ### Scope Status
 
-```text id="qryzii"
+```text
 draft
 pending_review
 approved
@@ -626,7 +626,7 @@ revoked
 
 ### Campaign Status
 
-```text id="57r5kc"
+```text
 draft
 pending_approval
 approved
@@ -637,7 +637,7 @@ cancelled
 
 ### Campaign Step Status
 
-```text id="azztxv"
+```text
 planned
 pending_approval
 approved
@@ -652,7 +652,7 @@ requires_review
 
 ### Finding Status
 
-```text id="5vfqb7"
+```text
 draft
 under_review
 confirmed
@@ -663,7 +663,7 @@ closed
 
 ### Approval Status
 
-```text id="uz8y09"
+```text
 not_required
 pending
 approved
@@ -678,7 +678,7 @@ revoked
 
 The first implementation-ready scope should include:
 
-```text id="0495ob"
+```text
 Project Workspace
 Scope Manager
 Asset Registry
@@ -714,7 +714,7 @@ MVP completion criteria:
 
 The following capabilities are outside early versions:
 
-```text id="7p384t"
+```text
 autonomous_exploitation
 autonomous_lateral_movement
 credential_dumping_automation
@@ -733,7 +733,7 @@ direct_command_execution_by_llm
 
 Future versions may define:
 
-```text id="hd9yus"
+```text
 safe_validation_workflow
 controlled_runner_interface
 external_tool_import
@@ -788,7 +788,7 @@ The product excludes:
 
 Product scope documentation should be supported by:
 
-```text id="tfuymn"
+```text
 README.md
 docs/overview.md
 docs/architecture.md
@@ -807,13 +807,13 @@ docs/roadmap.md
 
 Current version:
 
-```text id="ywimgd"
+```text
 v0.1 Community Draft
 ```
 
 Current focus:
 
-```text id="xrg5qg"
+```text
 product module definition
 workflow boundary
 role workflow

@@ -38,7 +38,7 @@ The architecture supports the following goals:
 
 ## High-Level Model
 
-```text id="4jxm7q"
+```text
 User
   |
   v
@@ -105,7 +105,7 @@ Project Output
 
 ## Core Data Flow
 
-```text id="ieq6pb"
+```text
 Create project
   |
   v
@@ -150,7 +150,7 @@ The Project Workspace is the root object for engagement data.
 
 It stores:
 
-```text id="qthcfg"
+```text
 project_id
 project_name
 client_name
@@ -166,7 +166,7 @@ updated_at
 
 Project status values:
 
-```text id="o3jz5j"
+```text
 draft
 active
 paused
@@ -176,7 +176,7 @@ archived
 
 A project links to:
 
-```text id="z8coyr"
+```text
 scope
 assets
 campaigns
@@ -196,7 +196,7 @@ Scope Manager defines the project boundary.
 
 It stores:
 
-```text id="je0scc"
+```text
 allowed_targets
 forbidden_targets
 test_window
@@ -209,7 +209,7 @@ notes
 
 Scope Manager is used by:
 
-```text id="hle7i7"
+```text
 Campaign Planner
 Safety Gate
 Action Log
@@ -229,7 +229,7 @@ Asset Registry stores target references and metadata.
 
 Asset types:
 
-```text id="9wpn2b"
+```text
 ip_address
 ip_range
 domain
@@ -246,7 +246,7 @@ lab_environment
 
 Asset fields:
 
-```text id="9d7v15"
+```text
 asset_id
 project_id
 asset_type
@@ -262,7 +262,7 @@ updated_at
 
 Assets are used by:
 
-```text id="g2ewd9"
+```text
 campaign steps
 action logs
 evidence
@@ -279,7 +279,7 @@ ATT&CK Registry stores ATT&CK content in a local model.
 
 Registry entities:
 
-```text id="vly7wz"
+```text
 attack_tactic
 attack_technique
 attack_subtechnique
@@ -291,7 +291,7 @@ attack_reference
 
 Technique fields:
 
-```text id="ru6qog"
+```text
 attack_id
 name
 description
@@ -330,7 +330,7 @@ Campaign Planner stores the operational plan for a project.
 
 Campaign fields:
 
-```text id="67t4fb"
+```text
 campaign_id
 project_id
 campaign_name
@@ -345,7 +345,7 @@ completed_at
 
 Campaign step fields:
 
-```text id="e7d9am"
+```text
 campaign_step_id
 campaign_id
 step_order
@@ -363,7 +363,7 @@ executed_at
 
 Campaign status values:
 
-```text id="d3ko2h"
+```text
 draft
 pending_approval
 approved
@@ -374,7 +374,7 @@ cancelled
 
 Campaign step status values:
 
-```text id="6ok8ol"
+```text
 planned
 pending_approval
 approved
@@ -395,7 +395,7 @@ Action Log records operator activity and workflow results.
 
 Action fields:
 
-```text id="17hkxq"
+```text
 action_id
 project_id
 campaign_id
@@ -415,7 +415,7 @@ updated_at
 
 Action types:
 
-```text id="mngqph"
+```text
 manual_validation
 configuration_review
 recon_note
@@ -428,7 +428,7 @@ cleanup_note
 
 Detection status values:
 
-```text id="m7hxyj"
+```text
 unknown
 detected
 not_detected
@@ -445,7 +445,7 @@ Evidence Vault stores files and metadata that support action records and finding
 
 Evidence types:
 
-```text id="zc9nio"
+```text
 screenshot
 terminal_output
 log_file
@@ -460,7 +460,7 @@ other
 
 Evidence fields:
 
-```text id="wi2jom"
+```text
 evidence_id
 project_id
 action_id
@@ -496,7 +496,7 @@ Finding Manager stores confirmed or draft findings.
 
 Finding fields:
 
-```text id="3gqspp"
+```text
 finding_id
 project_id
 title
@@ -516,7 +516,7 @@ updated_at
 
 Severity values:
 
-```text id="69m9gv"
+```text
 informational
 low
 medium
@@ -526,7 +526,7 @@ critical
 
 Finding status values:
 
-```text id="hob9yj"
+```text
 draft
 under_review
 confirmed
@@ -537,7 +537,7 @@ closed
 
 Findings may link to:
 
-```text id="13ln0p"
+```text
 assets
 evidence
 actions
@@ -554,7 +554,7 @@ Report Builder creates structured report output from project data.
 
 Report sections:
 
-```text id="az9e82"
+```text
 Cover
 Document Control
 Executive Summary
@@ -574,7 +574,7 @@ Cleanup Status
 
 Output formats:
 
-```text id="e8qo0l"
+```text
 markdown
 html
 pdf
@@ -583,7 +583,7 @@ docx_later
 
 Report Builder reads from:
 
-```text id="6lrky8"
+```text
 project
 scope
 assets
@@ -603,7 +603,7 @@ Safety Gate validates workflow-related artifacts.
 
 Safety Gate checks:
 
-```text id="htuzn1"
+```text
 project_status
 scope_status
 target_allowlist
@@ -618,7 +618,7 @@ cleanup_requirement
 
 Safety Gate output:
 
-```text id="348ek4"
+```text
 allowed
 blocked
 approval_required
@@ -627,7 +627,7 @@ requires_review
 
 A blocked item should include:
 
-```text id="75ocey"
+```text
 reason
 policy_reference
 required_fix
@@ -643,7 +643,7 @@ LLM Assistance Layer supports planning, analysis, and reporting.
 
 LLM-supported tasks:
 
-```text id="hcgc0w"
+```text
 scope_summary
 attack_mapping_suggestion
 campaign_plan_draft
@@ -658,7 +658,7 @@ cleanup_checklist
 
 LLM output must pass:
 
-```text id="1zue56"
+```text
 format_validation
 schema_validation
 attack_registry_validation
@@ -669,7 +669,7 @@ human_review
 
 LLM output must not bypass:
 
-```text id="ihs3p7"
+```text
 scope
 approval
 policy
@@ -685,7 +685,7 @@ Telemetry Model stores expected and observed detection data.
 
 Telemetry fields:
 
-```text id="k2pwxq"
+```text
 telemetry_id
 project_id
 campaign_step_id
@@ -701,7 +701,7 @@ reviewed_at
 
 Detection status values:
 
-```text id="0fc1qs"
+```text
 unknown
 detected
 not_detected
@@ -712,7 +712,7 @@ not_applicable
 
 Telemetry Model is used by:
 
-```text id="mzkb32"
+```text
 Campaign Planner
 Evidence Vault
 Finding Manager
@@ -728,7 +728,7 @@ The architecture supports future import from external tools.
 
 Import types:
 
-```text id="tq9tsw"
+```text
 scanner_result
 siem_alert
 edr_alert
@@ -742,7 +742,7 @@ manual_note
 
 Import flow:
 
-```text id="48y0j8"
+```text
 Upload or import file
   |
   v
@@ -775,7 +775,7 @@ The future validation layer may support controlled validation workflows.
 
 Validation layer components:
 
-```text id="hyq7qm"
+```text
 workflow_definition
 schema_validator
 scope_validator
@@ -789,7 +789,7 @@ cleanup_tracker
 
 Validation workflow states:
 
-```text id="qko95n"
+```text
 draft
 pending_validation
 pending_approval
@@ -809,7 +809,7 @@ Execution-related work must remain scope-bound, approval-controlled, and audit-l
 
 ## Logical Architecture
 
-```text id="qnuwsr"
+```text
 +-------------------------------------------------------+
 |                    User Interface                     |
 |-------------------------------------------------------|
@@ -877,7 +877,7 @@ Execution-related work must remain scope-bound, approval-controlled, and audit-l
 
 Initial API groups:
 
-```text id="lypy35"
+```text
 /auth
 /users
 /projects
@@ -894,7 +894,7 @@ Initial API groups:
 
 Future API groups:
 
-```text id="4nb0yp"
+```text
 /llm
 /policy
 /telemetry
@@ -930,7 +930,7 @@ Data storage types:
 
 Security controls:
 
-```text id="7x9ys0"
+```text
 authentication
 role_based_access
 project_membership_check
@@ -945,7 +945,7 @@ sensitive_data_sanitization
 
 Security-sensitive operations:
 
-```text id="r7ibcl"
+```text
 scope_update
 approval_change
 evidence_download
@@ -962,7 +962,7 @@ llm_output_acceptance
 
 Initial deployment model:
 
-```text id="zi7099"
+```text
 single workspace
 single database
 local storage
@@ -972,7 +972,7 @@ documentation-first repository
 
 Future deployment model:
 
-```text id="lth9aw"
+```text
 multi-project workspace
 object storage
 background worker
@@ -989,7 +989,7 @@ LLM provider configuration
 
 Use this checklist before implementation work:
 
-```text id="i7xeul"
+```text
 [ ] Project model is defined
 [ ] Scope model is defined
 [ ] Asset model is defined
@@ -1013,13 +1013,13 @@ Use this checklist before implementation work:
 
 Current version:
 
-```text id="s5kqub"
+```text
 v0.1 Community Draft
 ```
 
 Current focus:
 
-```text id="mdwcni"
+```text
 workspace architecture
 scope and policy control
 LLM assistance boundary

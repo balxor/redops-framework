@@ -59,19 +59,19 @@ The registry should support:
 
 Primary source:
 
-```text id="4v6ihq"
+```text
 MITRE ATT&CK STIX data
 ```
 
 Initial dataset:
 
-```text id="givqdh"
+```text
 enterprise-attack.json
 ```
 
 Future datasets:
 
-```text id="3xqdkb"
+```text
 mobile-attack.json
 ics-attack.json
 ```
@@ -80,7 +80,7 @@ The registry should store import metadata for every ATT&CK dataset.
 
 Import metadata fields:
 
-```text id="0detgp"
+```text
 import_id
 domain
 source_file
@@ -99,7 +99,7 @@ notes
 
 Supported domain values:
 
-```text id="3b7xxs"
+```text
 enterprise
 mobile
 ics
@@ -107,7 +107,7 @@ ics
 
 Initial implementation target:
 
-```text id="j0uwl6"
+```text
 enterprise
 ```
 
@@ -119,7 +119,7 @@ Domain support should be explicit. A technique from one domain should not be tre
 
 Registry entities:
 
-```text id="kttnvi"
+```text
 attack_collection
 attack_tactic
 attack_technique
@@ -132,7 +132,7 @@ attack_import_log
 
 Optional future entities:
 
-```text id="6p9ewb"
+```text
 attack_group
 attack_software
 attack_campaign
@@ -148,7 +148,7 @@ The collection model stores ATT&CK dataset metadata.
 
 Fields:
 
-```text id="s04v6y"
+```text
 collection_id
 domain
 name
@@ -162,7 +162,7 @@ imported_at
 
 Example:
 
-```yaml id="vc8f2t"
+```yaml
 collection:
   domain: enterprise
   name: Enterprise ATT&CK
@@ -181,7 +181,7 @@ Tactics describe the tactical objective of an action.
 
 Fields:
 
-```text id="hr1q03"
+```text
 tactic_id
 attack_id
 short_name
@@ -195,7 +195,7 @@ modified_at_source
 
 Example:
 
-```yaml id="j8xr6i"
+```yaml
 tactic:
   attack_id: TA0007
   short_name: discovery
@@ -214,7 +214,7 @@ Techniques describe how a tactical objective may be achieved.
 
 Fields:
 
-```text id="8s64wu"
+```text
 technique_id
 attack_id
 name
@@ -240,7 +240,7 @@ raw_stix
 
 Required fields:
 
-```text id="cg9gq9"
+```text
 attack_id
 name
 domain
@@ -251,7 +251,7 @@ deprecated
 
 Optional fields:
 
-```text id="unltfy"
+```text
 description
 platforms
 data_components
@@ -263,7 +263,7 @@ raw_stix
 
 Example:
 
-```yaml id="88niss"
+```yaml
 technique:
   attack_id: T1057
   name: Process Discovery
@@ -296,7 +296,7 @@ Sub-technique rules:
 
 Example:
 
-```yaml id="u9yioo"
+```yaml
 technique:
   attack_id: T1053.005
   name: Scheduled Task
@@ -320,7 +320,7 @@ Relationships connect ATT&CK objects.
 
 Relationship fields:
 
-```text id="x4dbw7"
+```text
 relationship_id
 source_ref
 target_ref
@@ -335,7 +335,7 @@ raw_stix
 
 Common relationship types:
 
-```text id="r974wz"
+```text
 uses
 mitigates
 detects
@@ -363,7 +363,7 @@ Data components describe expected telemetry or observable data.
 
 Fields:
 
-```text id="axml9t"
+```text
 data_component_id
 name
 description
@@ -383,7 +383,7 @@ Use cases:
 
 Example:
 
-```yaml id="3z69zi"
+```yaml
 data_component:
   name: Process Creation
   domain: enterprise
@@ -399,7 +399,7 @@ Mitigations describe defensive controls or recommendations related to techniques
 
 Fields:
 
-```text id="y98vc7"
+```text
 mitigation_id
 attack_id
 name
@@ -419,7 +419,7 @@ Use cases:
 
 Example:
 
-```yaml id="639f4m"
+```yaml
 mitigation:
   attack_id: M1047
   name: Audit
@@ -436,7 +436,7 @@ References store source links and external references from ATT&CK.
 
 Fields:
 
-```text id="ym2f6h"
+```text
 reference_id
 source_name
 url
@@ -464,13 +464,13 @@ The registry should store content version with every imported object.
 
 Recommended identity key:
 
-```text id="f2cuvq"
+```text
 domain + attack_id + content_version
 ```
 
 Example:
 
-```text id="2ss16j"
+```text
 enterprise:T1057:content_version
 ```
 
@@ -515,7 +515,7 @@ Campaign Planner behavior:
 
 ATT&CK import flow:
 
-```text id="qkxepm"
+```text
 Load STIX bundle
   |
   v
@@ -568,7 +568,7 @@ Import rules:
 
 Import status values:
 
-```text id="tp222v"
+```text
 pending
 running
 completed
@@ -578,7 +578,7 @@ completed_with_warnings
 
 Import log fields:
 
-```text id="bdiafc"
+```text
 import_id
 domain
 content_version
@@ -601,7 +601,7 @@ notes
 
 Search should support:
 
-```text id="88m8pw"
+```text
 attack_id
 technique_name
 tactic
@@ -615,7 +615,7 @@ revoked
 
 Example query parameters:
 
-```text id="n9sdpa"
+```text
 ?attack_id=T1057
 ?tactic=discovery
 ?platform=Windows
@@ -627,7 +627,7 @@ Example query parameters:
 
 Search result fields:
 
-```text id="ydb8tg"
+```text
 attack_id
 name
 domain
@@ -648,7 +648,7 @@ Campaign steps may reference ATT&CK techniques.
 
 Campaign step mapping fields:
 
-```text id="a3bg1l"
+```text
 campaign_step_id
 attack_technique_id
 attack_id
@@ -677,7 +677,7 @@ Findings may reference ATT&CK techniques.
 
 Finding mapping fields:
 
-```text id="m5jjk7"
+```text
 finding_id
 attack_technique_id
 attack_id
@@ -692,7 +692,7 @@ mapped_at
 
 Mapping confidence values:
 
-```text id="mu9g09"
+```text
 low
 medium
 high
@@ -715,7 +715,7 @@ Telemetry mapping links campaign steps and findings to expected or observed data
 
 Telemetry mapping fields:
 
-```text id="o2ip2z"
+```text
 telemetry_id
 project_id
 campaign_step_id
@@ -733,7 +733,7 @@ reviewed_at
 
 Detection status values:
 
-```text id="y2ovmu"
+```text
 unknown
 detected
 not_detected
@@ -758,7 +758,7 @@ LLM-assisted ATT&CK mapping must be validated against the registry.
 
 LLM output should include:
 
-```text id="t20eep"
+```text
 task
 project_id
 scope_ref
@@ -784,7 +784,7 @@ Validation checks:
 
 Example LLM mapping draft:
 
-```yaml id="d8sdsu"
+```yaml
 task: attack_mapping_suggestion
 project_id: example-project
 objective: review endpoint discovery visibility
@@ -812,7 +812,7 @@ Reports may include ATT&CK data for:
 
 Report output should include:
 
-```text id="13noaa"
+```text
 attack_id
 technique_name
 tactic
@@ -831,7 +831,7 @@ Reports should not imply that a technique was fully emulated when only mapping o
 
 Initial API endpoints:
 
-```http id="wmh3gr"
+```http
 POST /api/v1/attack/import
 GET  /api/v1/attack/collections
 GET  /api/v1/attack/tactics
@@ -844,7 +844,7 @@ GET  /api/v1/attack/imports/{import_id}
 
 Mapping endpoints:
 
-```http id="a5m9ka"
+```http
 POST /api/v1/campaign-steps/{step_id}/attack-mapping
 POST /api/v1/findings/{finding_id}/attack-mapping
 POST /api/v1/telemetry/{telemetry_id}/attack-mapping
@@ -856,7 +856,7 @@ POST /api/v1/telemetry/{telemetry_id}/attack-mapping
 
 Technique schema draft:
 
-```json id="em7wyo"
+```json
 {
   "attack_id": "T1057",
   "name": "Process Discovery",
@@ -873,7 +873,7 @@ Technique schema draft:
 
 Mapping schema draft:
 
-```json id="pv08g9"
+```json
 {
   "entity_type": "campaign_step",
   "entity_id": "step-001",
@@ -891,7 +891,7 @@ Mapping schema draft:
 
 Use this checklist when reviewing ATT&CK registry changes:
 
-```text id="d9my93"
+```text
 [ ] Source dataset is identified
 [ ] Domain is identified
 [ ] Content version is stored
@@ -913,13 +913,13 @@ Use this checklist when reviewing ATT&CK registry changes:
 
 Current version:
 
-```text id="2gpqxk"
+```text
 v0.1 Community Draft
 ```
 
 Current focus:
 
-```text id="lr4y16"
+```text
 ATT&CK registry model
 version-aware mapping
 campaign mapping

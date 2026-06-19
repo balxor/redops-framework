@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/asset.schema.json",
+  "title": "Asset",
+  "type": "object",
+  "required": ["asset_id", "project_id", "value", "type"],
+  "properties": {
+    "asset_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "scope_id": { "type": "string" },
+    "value": { "type": "string", "minLength": 1 },
+    "type": {
+      "type": "string",
+      "enum": ["domain", "ip_address", "url", "application", "host", "service", "other"]
+    },
+    "environment": { "type": "string" },
+    "criticality": {
+      "type": "string",
+      "enum": ["unknown", "low", "medium", "high", "critical"]
+    },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/evidence.schema.json",
+  "title": "Evidence",
+  "type": "object",
+  "required": ["evidence_id", "project_id", "type", "description"],
+  "properties": {
+    "evidence_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "action_id": { "type": "string" },
+    "finding_id": { "type": "string" },
+    "type": {
+      "type": "string",
+      "enum": ["screenshot", "log_excerpt", "file_hash", "note", "report_reference", "other"]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "file_hash_sha256": { "type": "string" },
+    "sanitized": { "type": "boolean" },
+    "captured_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true
+}

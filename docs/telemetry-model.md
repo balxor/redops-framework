@@ -53,7 +53,7 @@ Future versions may support SIEM, EDR, cloud logging, and detection engineering 
 
 ## Detection Status Values
 
-```text id="9vwdpf"
+```text
 unknown
 detected
 not_detected
@@ -77,7 +77,7 @@ not_applicable
 
 Telemetry record fields:
 
-```text id="0g7sh9"
+```text
 telemetry_id
 project_id
 campaign_id
@@ -99,7 +99,7 @@ updated_at
 
 Required fields:
 
-```text id="dw958w"
+```text
 project_id
 detection_status
 created_at
@@ -107,7 +107,7 @@ created_at
 
 Recommended fields:
 
-```text id="1adnor"
+```text
 campaign_step_id
 asset_id
 attack_technique_id
@@ -128,7 +128,7 @@ Expected telemetry describes what should be visible if the activity is logged or
 
 Expected telemetry fields:
 
-```text id="zeyquu"
+```text
 name
 description
 data_source
@@ -141,7 +141,7 @@ required
 
 Example:
 
-```yaml id="ej6n63"
+```yaml
 expected_telemetry:
   - name: process creation event
     data_source: endpoint
@@ -168,7 +168,7 @@ Observed telemetry describes what was found during review.
 
 Observed telemetry fields:
 
-```text id="9oamzj"
+```text
 name
 description
 data_source
@@ -184,7 +184,7 @@ review_note
 
 Example:
 
-```yaml id="5pl56p"
+```yaml
 observed_telemetry:
   - name: endpoint process creation
     data_source: edr
@@ -197,7 +197,7 @@ observed_telemetry:
 
 Confidence values:
 
-```text id="2h81mx"
+```text
 low
 medium
 high
@@ -210,7 +210,7 @@ manual_review_required
 
 Supported data source types:
 
-```text id="9ulv7a"
+```text
 endpoint
 siem
 edr
@@ -229,7 +229,7 @@ other
 
 Data source fields:
 
-```text id="7s6k47"
+```text
 data_source_id
 project_id
 name
@@ -243,7 +243,7 @@ notes
 
 Example:
 
-```yaml id="5aosop"
+```yaml
 data_source:
   name: endpoint-edr
   type: edr
@@ -259,7 +259,7 @@ Telemetry may map to ATT&CK data components.
 
 Mapping fields:
 
-```text id="c1qeyp"
+```text
 attack_technique_id
 data_component
 expected_signal
@@ -272,7 +272,7 @@ reviewed_at
 
 Example:
 
-```yaml id="xfcacj"
+```yaml
 attack_mapping:
   attack_technique_id: T1057
   technique_name: Process Discovery
@@ -297,7 +297,7 @@ Campaign steps may define expected telemetry.
 
 Campaign step telemetry fields:
 
-```text id="s63dn1"
+```text
 campaign_step_id
 attack_technique_id
 target_asset_id
@@ -309,7 +309,7 @@ review_status
 
 Example:
 
-```yaml id="g2oer0"
+```yaml
 campaign_step:
   id: step-001
   technique_id: T1057
@@ -344,7 +344,7 @@ Finding telemetry use cases:
 
 Finding telemetry fields:
 
-```text id="g1q92s"
+```text
 finding_id
 attack_technique_id
 expected_telemetry
@@ -358,7 +358,7 @@ reviewed_at
 
 Example:
 
-```yaml id="u0muzy"
+```yaml
 finding_telemetry:
   finding_id: finding-001
   technique_id: T1057
@@ -375,7 +375,7 @@ Detection gaps describe missing or incomplete telemetry.
 
 Detection gap types:
 
-```text id="5hlmzp"
+```text
 missing_telemetry
 incomplete_telemetry
 delayed_telemetry
@@ -388,7 +388,7 @@ not_reviewed
 
 Detection gap fields:
 
-```text id="0z1wxm"
+```text
 gap_id
 project_id
 campaign_step_id
@@ -405,7 +405,7 @@ created_at
 
 Example:
 
-```yaml id="z8a6iy"
+```yaml
 detection_gap:
   gap_type: incomplete_telemetry
   technique_id: T1057
@@ -420,7 +420,7 @@ detection_gap:
 
 Telemetry review workflow:
 
-```text id="3c7tlx"
+```text
 Define expected telemetry
   |
   v
@@ -444,7 +444,7 @@ Link telemetry to finding or report
 
 Review status values:
 
-```text id="288a01"
+```text
 not_started
 in_review
 reviewed
@@ -471,7 +471,7 @@ Telemetry records should link to evidence when observed data is available.
 
 Evidence examples:
 
-```text id="5nx9yk"
+```text
 siem_alert
 edr_alert
 log_file
@@ -497,7 +497,7 @@ LLM assistance may support telemetry review.
 
 Allowed LLM tasks:
 
-```text id="6wwe16"
+```text
 summarize_observed_telemetry
 compare_expected_and_observed_telemetry
 draft_detection_gap_note
@@ -507,7 +507,7 @@ draft_remediation_language
 
 Restricted LLM tasks:
 
-```text id="zopq1j"
+```text
 generate_evasion_steps
 generate_detection_bypass
 modify_detection_status_without_review
@@ -518,7 +518,7 @@ override_policy
 
 LLM output must include:
 
-```text id="cmw9d7"
+```text
 summary
 assumptions
 limitations
@@ -529,7 +529,7 @@ requires_review
 
 Example:
 
-```yaml id="aq5tvx"
+```yaml
 task: telemetry_gap_analysis
 campaign_step_id: step-001
 technique_id: T1057
@@ -552,7 +552,7 @@ Telemetry data may appear in report sections.
 
 Report sections:
 
-```text id="4787ag"
+```text
 Detection Feedback
 ATT&CK Mapping
 Technical Findings
@@ -563,7 +563,7 @@ Remediation Plan
 
 Recommended report fields:
 
-```text id="z8ascr"
+```text
 attack_id
 technique_name
 asset
@@ -608,7 +608,7 @@ Metrics should be treated as project review indicators. They should not replace 
 
 Initial telemetry endpoints:
 
-```http id="r76x4e"
+```http
 GET    /api/v1/projects/{project_id}/telemetry
 POST   /api/v1/projects/{project_id}/telemetry
 GET    /api/v1/telemetry/{telemetry_id}
@@ -618,14 +618,14 @@ DELETE /api/v1/telemetry/{telemetry_id}
 
 Campaign step telemetry endpoints:
 
-```http id="vgj36d"
+```http
 GET  /api/v1/campaign-steps/{step_id}/telemetry
 POST /api/v1/campaign-steps/{step_id}/telemetry
 ```
 
 Detection gap endpoints:
 
-```http id="vujsor"
+```http
 GET  /api/v1/projects/{project_id}/detection-gaps
 POST /api/v1/projects/{project_id}/detection-gaps
 GET  /api/v1/detection-gaps/{gap_id}
@@ -638,7 +638,7 @@ PATCH /api/v1/detection-gaps/{gap_id}
 
 Telemetry schema draft:
 
-```json id="ibxj2f"
+```json
 {
   "telemetry_id": "telemetry-001",
   "project_id": "project-001",
@@ -663,7 +663,7 @@ Telemetry schema draft:
 
 Detection gap schema draft:
 
-```json id="nb8oz6"
+```json
 {
   "gap_id": "gap-001",
   "project_id": "project-001",
@@ -683,7 +683,7 @@ Detection gap schema draft:
 
 Use this checklist when reviewing telemetry records.
 
-```text id="e1q0z0"
+```text
 [ ] Expected telemetry is defined
 [ ] Observed telemetry is documented
 [ ] Data source is identified
@@ -703,13 +703,13 @@ Use this checklist when reviewing telemetry records.
 
 Current version:
 
-```text id="401uxh"
+```text
 v0.1 Community Draft
 ```
 
 Current focus:
 
-```text id="kpq79x"
+```text
 expected telemetry
 observed telemetry
 detection status

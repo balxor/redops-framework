@@ -1,0 +1,206 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://redops-framework.local/schemas/project.schema.json",
+"title": "RedOps Project",
+"description": "Schema for a RedOps Framework project record.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"name",
+"engagement_type",
+"status"
+],
+"properties": {
+"project_id": {
+"type": "string",
+"description": "Unique project identifier.",
+"pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,127}$",
+"examples": [
+"project-001"
+]
+},
+"name": {
+"type": "string",
+"description": "Project name.",
+"minLength": 3,
+"maxLength": 200,
+"examples": [
+"Example Red Team Assessment"
+]
+},
+"client_name": {
+"type": "string",
+"description": "Client, business unit, or internal owner name.",
+"minLength": 1,
+"maxLength": 200,
+"examples": [
+"Example Client"
+]
+},
+"engagement_type": {
+"type": "string",
+"description": "Type of authorized security engagement.",
+"enum": [
+"external_pentest",
+"internal_pentest",
+"web_application_pentest",
+"mobile_application_pentest",
+"cloud_security_assessment",
+"red_team",
+"assumed_breach",
+"purple_team",
+"internal_assessment"
+],
+"examples": [
+"red_team"
+]
+},
+"description": {
+"type": "string",
+"description": "Short project description.",
+"maxLength": 4000,
+"examples": [
+"Authorized red team assessment for a controlled environment."
+]
+},
+"status": {
+"type": "string",
+"description": "Current project lifecycle status.",
+"enum": [
+"draft",
+"active",
+"paused",
+"completed",
+"archived"
+],
+"default": "draft",
+"examples": [
+"draft"
+]
+},
+"start_date": {
+"type": "string",
+"description": "Project start date.",
+"format": "date",
+"examples": [
+"2026-06-20"
+]
+},
+"end_date": {
+"type": "string",
+"description": "Project end date.",
+"format": "date",
+"examples": [
+"2026-06-30"
+]
+},
+"timezone": {
+"type": "string",
+"description": "Project timezone in IANA format.",
+"minLength": 1,
+"maxLength": 100,
+"examples": [
+"Asia/Jakarta"
+]
+},
+"created_by": {
+"$ref": "#/$defs/identifier"
+},
+"updated_by": {
+"$ref": "#/$defs/identifier"
+},
+"created_at": {
+"$ref": "#/$defs/date_time"
+},
+"updated_at": {
+"$ref": "#/$defs/date_time"
+},
+"tags": {
+"type": "array",
+"description": "Project tags.",
+"items": {
+"$ref": "#/$defs/tag"
+},
+"uniqueItems": true,
+"default": []
+},
+"contacts": {
+"type": "array",
+"description": "Project contacts such as engagement owner, emergency contact, or reviewer.",
+"items": {
+"$ref": "#/$defs/contact"
+},
+"default": []
+},
+"metadata": {
+"type": "object",
+"description": "Optional non-sensitive project metadata.",
+"additionalProperties": {
+"type": [
+"string",
+"number",
+"boolean",
+"null"
+]
+},
+"default": {}
+}
+},
+"$defs": {
+"identifier": {
+"type": "string",
+"description": "Stable identifier.",
+"pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,127}$"
+},
+"date_time": {
+"type": "string",
+"description": "UTC timestamp in ISO 8601 format.",
+"format": "date-time"
+},
+"tag": {
+"type": "string",
+"minLength": 1,
+"maxLength": 64,
+"pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}$"
+},
+"contact": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"name",
+"role"
+],
+"properties": {
+"name": {
+"type": "string",
+"minLength": 1,
+"maxLength": 200
+},
+"role": {
+"type": "string",
+"enum": [
+"project_owner",
+"technical_contact",
+"emergency_contact",
+"client_contact",
+"lead_operator",
+"reviewer",
+"other"
+]
+},
+"email": {
+"type": "string",
+"format": "email"
+},
+"phone": {
+"type": "string",
+"maxLength": 100
+},
+"notes": {
+"type": "string",
+"maxLength": 1000
+}
+}
+}
+}
+}

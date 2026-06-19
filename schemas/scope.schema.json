@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/scope.schema.json",
+  "title": "Scope",
+  "type": "object",
+  "required": ["scope_id", "project_id", "status", "approved_targets"],
+  "properties": {
+    "scope_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "approved", "active", "expired", "archived"]
+    },
+    "approved_targets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    },
+    "excluded_targets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    },
+    "test_windows": { "type": "array", "items": { "type": "object" } },
+    "approvals": { "type": "array", "items": { "type": "object" } }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "required": ["value", "type"],
+      "properties": {
+        "value": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": ["domain", "ip_address", "url", "application", "network", "other"]
+        },
+        "environment": { "type": "string" },
+        "notes": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

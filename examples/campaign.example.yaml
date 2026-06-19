@@ -1,0 +1,24 @@
+campaign_id: example-campaign
+project_id: example-project
+scope_id: example-scope
+status: draft
+objective: Validate detection coverage for approved test assets.
+steps:
+  - step_id: step-001
+    title: Review exposed application metadata
+    target: app.example.com
+    attack_mapping:
+      technique_id: T1592
+      technique_name: Gather Victim Host Information
+    risk_level: low
+    approval_required: false
+    expected_telemetry:
+      data_source: web_server_logs
+      signal: HTTP requests from authorized operator address
+    evidence_required:
+      - screenshot
+      - sanitized_log_excerpt
+safety:
+  scope_checked: true
+  cleanup_required: false
+  reviewer_required: true

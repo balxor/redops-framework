@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/finding.schema.json",
+  "title": "Finding",
+  "type": "object",
+  "required": ["finding_id", "project_id", "title", "status", "severity"],
+  "properties": {
+    "finding_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "confirmed", "accepted_risk", "resolved", "archived"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["informational", "low", "medium", "high", "critical"]
+    },
+    "affected_assets": { "type": "array", "items": { "type": "string" } },
+    "attack_mapping": { "type": "array", "items": { "type": "object" } },
+    "evidence_ids": { "type": "array", "items": { "type": "string" } },
+    "description": { "type": "string" },
+    "impact": { "type": "string" },
+    "recommendation": { "type": "string" }
+  },
+  "additionalProperties": true
+}

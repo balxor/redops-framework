@@ -78,7 +78,7 @@ Implementation work should follow after the core model is reviewed.
 
 RedOps Framework organizes security operations into the following flow:
 
-```text id="55vnoe"
+```text
 Project
   |
   v
@@ -186,7 +186,7 @@ Stores expected telemetry, observed telemetry, detection status, evidence refere
 
 A typical project workflow:
 
-```text id="ncm4ai"
+```text
 1. Create project
 2. Define scope
 3. Register assets
@@ -208,7 +208,7 @@ A typical project workflow:
 
 Project status values:
 
-```text id="yxpsgv"
+```text
 draft
 active
 paused
@@ -242,7 +242,7 @@ The project is retained for reference.
 
 Campaign status values:
 
-```text id="04gdde"
+```text
 draft
 pending_approval
 approved
@@ -253,7 +253,7 @@ cancelled
 
 Campaign step status values:
 
-```text id="rgbdu5"
+```text
 planned
 pending_approval
 approved
@@ -272,7 +272,7 @@ requires_review
 
 Finding status values:
 
-```text id="a613bu"
+```text
 draft
 under_review
 confirmed
@@ -283,7 +283,7 @@ closed
 
 Finding severity values:
 
-```text id="k2znxq"
+```text
 informational
 low
 medium
@@ -345,7 +345,7 @@ LLM-generated output must be reviewed and validated before it becomes a project 
 
 Validation requirements:
 
-```text id="yjqho9"
+```text
 format validation
 schema validation
 ATT&CK registry validation
@@ -383,7 +383,7 @@ Telemetry review compares expected detection signals with observed data.
 
 Detection status values:
 
-```text id="pa0pso"
+```text
 unknown
 detected
 not_detected
@@ -427,7 +427,7 @@ See `docs/telemetry-model.md` for details.
 
 ## Repository Layout
 
-```text id="9fr3uf"
+```text
 redops-framework/
 ├── README.md
 ├── SECURITY.md
@@ -457,13 +457,13 @@ Folder usage:
 
 Current version:
 
-```text id="8vbfwj"
+```text
 v0.1 Community Draft
 ```
 
 Current focus:
 
-```text id="sy5uqu"
+```text
 documentation structure
 security policy
 contribution rules
@@ -480,7 +480,7 @@ overview
 
 Recommended next documents:
 
-```text id="xv8nt2"
+```text
 docs/product-scope.md
 docs/attack-registry.md
 docs/telemetry-model.md

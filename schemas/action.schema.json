@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/action.schema.json",
+  "title": "Action",
+  "type": "object",
+  "required": ["action_id", "project_id", "status", "description"],
+  "properties": {
+    "action_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "campaign_id": { "type": "string" },
+    "campaign_step_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "approved", "executed", "skipped", "failed"]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "operator": { "type": "string" },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "approval_id": { "type": "string" },
+    "executed_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true
+}

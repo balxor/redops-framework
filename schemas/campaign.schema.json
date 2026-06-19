@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/redops-framework/schemas/campaign.schema.json",
+  "title": "Campaign",
+  "type": "object",
+  "required": ["campaign_id", "project_id", "status", "objective"],
+  "properties": {
+    "campaign_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "scope_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "planned", "approved", "active", "completed", "archived"]
+    },
+    "objective": { "type": "string", "minLength": 1 },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step_id", "title", "target"],
+        "properties": {
+          "step_id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "target": { "type": "string", "minLength": 1 },
+          "attack_mapping": { "type": "object" },
+          "risk_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "approval_required": { "type": "boolean" },
+          "expected_telemetry": { "type": "object" },
+          "evidence_required": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "safety": { "type": "object" }
+  },
+  "additionalProperties": true
+}

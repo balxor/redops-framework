@@ -1,0 +1,23 @@
+scope_id: example-scope
+project_id: example-project
+status: draft
+approved_targets:
+  - value: app.example.com
+    type: domain
+    environment: test
+    notes: Sanitized documentation target.
+  - value: 192.0.2.10
+    type: ip_address
+    environment: lab
+    notes: RFC 5737 documentation address.
+excluded_targets:
+  - value: production-payment.example.com
+    reason: Not approved for testing.
+test_windows:
+  - name: primary
+    start: 2026-07-01T09:00:00Z
+    end: 2026-07-01T17:00:00Z
+approvals:
+  - type: scope
+    status: pending
+    approver: security@example.com

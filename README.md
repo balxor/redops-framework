@@ -368,7 +368,13 @@ Detailed documents are stored in `docs/`.
 * Safe validation workflow model
 * Controlled runner interface
 * External tool import design
-* Telemetry feedback mapping
+
+### v0.7
+
+* Telemetry model
+* Detection feedback workflow
+* Expected and observed telemetry mapping
+* Report section for detection feedback
 
 ### v1.0
 
