@@ -1,99 +1,69 @@
 name: "Documentation"
 description: "Report a documentation issue or suggest a documentation improvement."
 title: "[Docs]: "
-labels: ["documentation"]
+labels:
+  - "documentation"
 
 body:
+  - type: input
+    id: document-path
+    attributes:
+      label: "Document path"
+      description: "Which document should be reviewed?"
+      placeholder: "docs/safety-model.md"
+    validations:
+      required: true
 
-* type: markdown
-  attributes:
-  value: |
-  Use this form for documentation issues, unclear wording, missing sections, broken links, inconsistent terminology, or example improvements.
+  - type: dropdown
+    id: documentation-type
+    attributes:
+      label: "Documentation type"
+      description: "Select the closest issue type."
+      options:
+        - "Missing information"
+        - "Unclear wording"
+        - "Incorrect information"
+        - "Inconsistent terminology"
+        - "Broken link"
+        - "Formatting issue"
+        - "Example improvement"
+        - "Template improvement"
+        - "Other"
+    validations:
+      required: true
 
-  ```
-  Public issues must not include private project data, client data, sensitive logs, unsafe operational detail, or real environment information.
-  ```
+  - type: textarea
+    id: documentation-summary
+    attributes:
+      label: "Documentation summary"
+      description: "Describe the issue or improvement."
+      placeholder: "Explain what should be changed and why."
+    validations:
+      required: true
 
-* type: input
-  id: document-path
-  attributes:
-  label: "Document path"
-  description: "Which document should be reviewed?"
-  placeholder: "docs/safety-model.md"
-  validations:
-  required: true
+  - type: textarea
+    id: suggested-update
+    attributes:
+      label: "Suggested update"
+      description: "Provide suggested replacement text if available."
+      placeholder: "Paste the suggested wording here."
+    validations:
+      required: false
 
-* type: dropdown
-  id: documentation-area
-  attributes:
-  label: "Documentation area"
-  description: "Select the closest documentation issue type."
-  options:
-  - "Missing information"
-  - "Unclear wording"
-  - "Incorrect information"
-  - "Inconsistent terminology"
-  - "Broken link"
-  - "Formatting issue"
-  - "Example improvement"
-  - "Template improvement"
-  - "Other"
-  validations:
-  required: true
+  - type: textarea
+    id: related-files
+    attributes:
+      label: "Related files"
+      description: "List related files that may need updates."
+      placeholder: "docs/glossary.md"
+    validations:
+      required: false
 
-* type: textarea
-  id: documentation-summary
-  attributes:
-  label: "Documentation summary"
-  description: "Describe the issue or improvement."
-  placeholder: "Explain what should be changed and why."
-  validations:
-  required: true
-
-* type: textarea
-  id: current-content
-  attributes:
-  label: "Current content"
-  description: "Paste the current wording if relevant."
-  placeholder: "Paste the current wording here."
-  validations:
-  required: false
-
-* type: textarea
-  id: suggested-update
-  attributes:
-  label: "Suggested update"
-  description: "Provide suggested replacement text if available."
-  placeholder: "Paste the suggested wording here."
-  validations:
-  required: false
-
-* type: textarea
-  id: related-files
-  attributes:
-  label: "Related files"
-  description: "List related files that may need updates."
-  placeholder: |
-  docs/glossary.md
-  docs/safety-model.md
-  README.md
-  validations:
-  required: false
-
-* type: checkboxes
-  id: public-report-check
-  attributes:
-  label: "Public report confirmation"
-  description: "Confirm that this issue is safe to post publicly."
-  options:
-  - label: "I confirm this issue uses only public or placeholder information."
-  required: true
-
-* type: textarea
-  id: additional-context
-  attributes:
-  label: "Additional context"
-  description: "Add any other context that may help reviewers."
-  placeholder: "Add context here."
-  validations:
-  required: false
+  - type: textarea
+    id: public-safety-confirmation
+    attributes:
+      label: "Public safety confirmation"
+      description: "Confirm that this issue uses public or placeholder information only."
+      placeholder: "Confirmed. This issue does not include credentials, secrets, private logs, client data, or unsafe operational detail."
+    validations:
+      required: true

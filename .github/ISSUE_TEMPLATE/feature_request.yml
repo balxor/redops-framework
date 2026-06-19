@@ -1,175 +1,127 @@
 name: "Feature Request"
 description: "Suggest a new capability, module, workflow, schema, or documentation improvement."
 title: "[Feature]: "
-labels: ["enhancement"]
+labels:
+  - "enhancement"
 
 body:
+  - type: dropdown
+    id: feature-area
+    attributes:
+      label: "Feature area"
+      description: "Which area does this feature affect?"
+      options:
+        - "Project Workspace"
+        - "Scope Manager"
+        - "Asset Registry"
+        - "ATTACK Registry"
+        - "Campaign Planner"
+        - "Action Log"
+        - "Evidence Vault"
+        - "Finding Manager"
+        - "Report Builder"
+        - "Safety Gate"
+        - "Telemetry Model"
+        - "LLM Assistance"
+        - "Audit Trail"
+        - "API"
+        - "Schema"
+        - "Template"
+        - "Documentation"
+        - "Other"
+    validations:
+      required: true
 
-* type: markdown
-  attributes:
-  value: |
-  Use this form to suggest a new feature or improvement for RedOps Framework.
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: "Problem description"
+      description: "What problem should this feature solve?"
+      placeholder: "Describe the workflow gap, documentation gap, or product need."
+    validations:
+      required: true
 
-  ```
-  Keep the request aligned with authorized pentest and red team workflow management.
+  - type: textarea
+    id: proposed-change
+    attributes:
+      label: "Proposed change"
+      description: "Describe the feature or improvement."
+      placeholder: "Explain what should be added or changed."
+    validations:
+      required: true
 
-  Public issues must not include private project data, client data, sensitive logs, unsafe operational detail, or real environment information.
-  ```
+  - type: dropdown
+    id: priority-level
+    attributes:
+      label: "Priority level"
+      description: "How important is this feature?"
+      options:
+        - "Low"
+        - "Medium"
+        - "High"
+        - "Critical"
+    validations:
+      required: true
 
-* type: dropdown
-  id: feature-area
-  attributes:
-  label: "Feature area"
-  description: "Which area does this feature affect?"
-  options:
-  - "Project Workspace"
-  - "Scope Manager"
-  - "Asset Registry"
-  - "ATTACK Registry"
-  - "Campaign Planner"
-  - "Action Log"
-  - "Evidence Vault"
-  - "Finding Manager"
-  - "Report Builder"
-  - "Safety Gate"
-  - "Telemetry Model"
-  - "LLM Assistance"
-  - "Audit Trail"
-  - "API"
-  - "Schema"
-  - "Template"
-  - "Documentation"
-  - "Other"
-  validations:
-  required: true
+  - type: dropdown
+    id: target-version
+    attributes:
+      label: "Target version"
+      description: "Which roadmap version should this belong to?"
+      options:
+        - "v0.1 Community Draft"
+        - "v0.2 Framework Specification"
+        - "v0.3 Operations Workflow"
+        - "v0.4 Governance Model"
+        - "v0.5 LLM Assistance"
+        - "v0.6 Safe Validation Model"
+        - "v0.7 Telemetry Model"
+        - "v1.0 Stable Framework Specification"
+        - "Unassigned"
+    validations:
+      required: false
 
-* type: textarea
-  id: problem-description
-  attributes:
-  label: "Problem description"
-  description: "What problem should this feature solve?"
-  placeholder: "Describe the workflow gap, documentation gap, or product need."
-  validations:
-  required: true
+  - type: textarea
+    id: safety-considerations
+    attributes:
+      label: "Safety considerations"
+      description: "Describe authorization, scope, approval, audit, evidence handling, or misuse considerations."
+      placeholder: "Explain any safety impact or write Not applicable."
+    validations:
+      required: true
 
-* type: textarea
-  id: proposed-change
-  attributes:
-  label: "Proposed change"
-  description: "Describe the feature or improvement."
-  placeholder: "Explain what should be added or changed."
-  validations:
-  required: true
+  - type: textarea
+    id: data-model-notes
+    attributes:
+      label: "Data model notes"
+      description: "List any new fields, entities, status values, or schema changes needed."
+      placeholder: "New entity, new fields, new status values, or related schema."
+    validations:
+      required: false
 
-* type: textarea
-  id: expected-workflow
-  attributes:
-  label: "Expected workflow"
-  description: "Describe how the feature should work from a user perspective."
-  placeholder: |
-  1. User opens a project.
-  2. User selects the relevant module.
-  3. User completes the workflow.
-  4. The framework records the result.
-  validations:
-  required: false
+  - type: textarea
+    id: api-notes
+    attributes:
+      label: "API notes"
+      description: "List any API endpoints or request and response changes if relevant."
+      placeholder: "Example: GET /api/v1/example"
+    validations:
+      required: false
 
-* type: dropdown
-  id: priority-level
-  attributes:
-  label: "Priority level"
-  description: "How important is this feature?"
-  options:
-  - "Low"
-  - "Medium"
-  - "High"
-  - "Critical"
-  validations:
-  required: true
+  - type: textarea
+    id: llm-notes
+    attributes:
+      label: "LLM notes"
+      description: "Describe whether this feature affects LLM-assisted workflow."
+      placeholder: "Explain supported tasks, restricted tasks, validation requirements, and review requirements."
+    validations:
+      required: false
 
-* type: dropdown
-  id: target-version
-  attributes:
-  label: "Target version"
-  description: "Which roadmap version should this belong to?"
-  options:
-  - "v0.1 Community Draft"
-  - "v0.2 Framework Specification"
-  - "v0.3 Operations Workflow"
-  - "v0.4 Governance Model"
-  - "v0.5 LLM Assistance"
-  - "v0.6 Safe Validation Model"
-  - "v0.7 Telemetry Model"
-  - "v1.0 Stable Framework Specification"
-  - "Unassigned"
-  validations:
-  required: false
-
-* type: textarea
-  id: safety-considerations
-  attributes:
-  label: "Safety considerations"
-  description: "Describe authorization, scope, approval, audit, evidence handling, or misuse considerations."
-  placeholder: "Explain any safety impact or write Not applicable."
-  validations:
-  required: true
-
-* type: textarea
-  id: data-model-notes
-  attributes:
-  label: "Data model notes"
-  description: "List any new fields, entities, status values, or schema changes needed."
-  placeholder: |
-  New entity:
-  New fields:
-  New status values:
-  Related schema:
-  validations:
-  required: false
-
-* type: textarea
-  id: api-notes
-  attributes:
-  label: "API notes"
-  description: "List any API endpoints or request and response changes if relevant."
-  placeholder: |
-  GET /api/v1/example
-  POST /api/v1/example
-  validations:
-  required: false
-
-* type: textarea
-  id: llm-notes
-  attributes:
-  label: "LLM notes"
-  description: "Describe whether this feature affects LLM-assisted workflow."
-  placeholder: "Explain supported tasks, restricted tasks, validation requirements, and review requirements."
-  validations:
-  required: false
-
-* type: textarea
-  id: alternatives-considered
-  attributes:
-  label: "Alternatives considered"
-  description: "Describe alternatives that were considered."
-  placeholder: "Add alternatives here."
-  validations:
-  required: false
-
-* type: checkboxes
-  id: public-request-check
-  attributes:
-  label: "Public request confirmation"
-  description: "Confirm that this request is safe to post publicly."
-  options:
-  - label: "I confirm this request uses only public or placeholder information."
-  required: true
-
-* type: textarea
-  id: additional-context
-  attributes:
-  label: "Additional context"
-  description: "Add any other context that may help reviewers."
-  placeholder: "Add context here."
-  validations:
-  required: false
+  - type: textarea
+    id: public-safety-confirmation
+    attributes:
+      label: "Public safety confirmation"
+      description: "Confirm that this request uses public or placeholder information only."
+      placeholder: "Confirmed. This request does not include credentials, secrets, private logs, client data, or unsafe operational detail."
+    validations:
+      required: true
