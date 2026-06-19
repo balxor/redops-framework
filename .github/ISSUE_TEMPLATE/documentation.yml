@@ -1,6 +1,6 @@
 name: Documentation
 description: Report a documentation issue or suggest a documentation improvement.
-title: "[Docs]: "
+title: "[Docs]:"
 labels:
 
 * documentation

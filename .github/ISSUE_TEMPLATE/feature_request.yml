@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest a new capability, module, workflow, schema, or documentation improvement.
-title: "[Feature]: "
+title: "[Feature]:"
 labels:
 
 * enhancement
