@@ -859,7 +859,7 @@ Execution-related work must remain scope-bound, approval-controlled, and audit-l
 
 | Layer         | Suggested Technology                                  |
 | ------------- | ----------------------------------------------------- |
-| Frontend      | React or Next.js                                      |
+| Frontend      | React + Vite + TypeScript + Tailwind + TanStack Query (implemented in `frontend/`) |
 | Backend       | Python FastAPI                                        |
 | Database      | PostgreSQL                                            |
 | ORM           | SQLAlchemy                                            |

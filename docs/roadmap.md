@@ -208,7 +208,8 @@ v0.6 defines controlled validation workflow concepts.
 
 * Safe validation workflow format
 * Controlled runner interface proposal
-* External tool import design
+* External tool import design (`docs/integrations.md`)
+* Adversary-emulation import design (Atomic Red Team, MITRE Caldera — import only)
 * Lab-first validation policy
 * Cleanup and revert requirements
 * Validation status model
@@ -315,9 +316,10 @@ Suggested implementation sequence:
 9. Finding manager
 10. Report builder
 11. Safety gate
-12. LLM-assisted workflow
-13. Safe validation workflow
-14. Telemetry feedback
+12. Web console (React + Vite frontend, see `frontend/`)
+13. LLM-assisted workflow
+14. Safe validation workflow
+15. Telemetry feedback
 
 ---
 
@@ -329,8 +331,9 @@ Suggested implementation sequence:
 | Database      | PostgreSQL                                            |
 | ORM           | SQLAlchemy                                            |
 | Migration     | Alembic                                               |
-| Frontend      | React or Next.js                                      |
+| Frontend      | React + Vite + TypeScript (implemented in `frontend/`) |
 | UI            | Tailwind CSS                                          |
+| Data fetching | TanStack Query                                        |
 | Storage       | Local filesystem for MVP, S3-compatible storage later |
 | Auth          | JWT for MVP, SSO later                                |
 | Documentation | Markdown                                              |
@@ -363,9 +366,9 @@ Mid-term priority:
 Long-term priority:
 
 1. Safe validation workflow
-2. External tool import
+2. External tool import — scanners, DAST, adversary emulation (`docs/integrations.md`)
 3. Telemetry feedback
-4. Detection engineering integration
+4. Detection engineering integration — SIEM/EDR detection feedback
 5. Multi-project workspace
 6. Role and permission expansion
 

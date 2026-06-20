@@ -66,6 +66,11 @@ Core functions:
 | Safety Gate       | Enforces scope, approval, allowlist, and restricted action policy                 |
 | Telemetry Model   | Maps expected and observed telemetry to detection status                          |
 | LLM Assistance    | Supports planning, review, evidence summary, finding draft, and report draft      |
+| Web Console       | React + Vite frontend (`frontend/`) for operators to drive the workflow above     |
+
+The backend exposes these components through the API in `backend/`. The
+`frontend/` web console (RedOps Console) is a typed client over that API — see
+`frontend/README.md` and `docs/getting-started.md` to run the full stack.
 
 ---
 
@@ -251,18 +256,32 @@ redops-framework/
 ├── CODE_OF_CONDUCT.md
 ├── .gitignore
 │
+├── AGENTS.md
+├── CHANGELOG.md
+├── docker-compose.yml
+├── .env.example
+│
 ├── docs/
 │   ├── overview.md
 │   ├── product-scope.md
 │   ├── architecture.md
 │   ├── attack-registry.md
+│   ├── integrations.md
+│   ├── getting-started.md
 │   ├── llm-assistance.md
 │   ├── safety-model.md
 │   ├── telemetry-model.md
 │   ├── data-model.md
 │   ├── api.md
 │   ├── roadmap.md
-│   └── glossary.md
+│   ├── glossary.md
+│   └── briefs/
+│
+├── frontend/
+│   ├── src/
+│   ├── docs/
+│   ├── package.json
+│   └── README.md
 │
 ├── schemas/
 │   ├── project.schema.json
@@ -318,6 +337,8 @@ Detailed documents are stored in `docs/`.
 | `docs/product-scope.md`   | Product modules and workflow scope         |
 | `docs/architecture.md`    | System architecture and component model    |
 | `docs/attack-registry.md` | ATT&CK data import and registry model      |
+| `docs/integrations.md`    | External tooling (Caldera, Atomic, SIEM/EDR) integration design |
+| `docs/getting-started.md` | Local full-stack setup (backend + frontend + DB) |
 | `docs/llm-assistance.md`  | LLM-assisted workflow model                |
 | `docs/safety-model.md`    | Scope, approval, policy, and audit control |
 | `docs/telemetry-model.md` | Detection feedback and telemetry mapping   |

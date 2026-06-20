@@ -52,6 +52,39 @@ The initial version is documentation-first. Implementation work should follow af
 
 ---
 
+## Operating Modes
+
+The same modules support two complementary ways of working. Modes are a framing
+over shared data, not separate products — a project can use both.
+
+### Pentest Mode
+
+Focused on day-to-day assessment work: managing scope and targets, recording
+findings with evidence, and producing reports.
+
+| Emphasis        | Modules                                                        |
+| --------------- | ------------------------------------------------------------- |
+| Scope & targets | Scope Manager, Asset Registry                                 |
+| Work & evidence | Action Log, Evidence Vault                                    |
+| Outcomes        | Finding Manager, Report Builder                               |
+
+### Red Team Mode
+
+Focused on adversary emulation: planning an ATT&CK-mapped campaign, gating
+sensitive steps behind approval, and reconciling activity against detection.
+
+| Emphasis            | Modules                                                   |
+| ------------------- | --------------------------------------------------------- |
+| Attack path         | Campaign Planner (ATT&CK chain), ATT&CK Registry          |
+| Control             | Safety Gate (manual approval for restricted steps)        |
+| Detection feedback  | Telemetry Model, Action Log (detection status)            |
+| Hygiene             | Cleanup tracking via Action Log + Audit Trail             |
+
+Both modes share Project Workspace, Safety Gate, Audit Trail, LLM Assistance,
+and the report pipeline.
+
+---
+
 ## Product Modules
 
 Initial modules:
@@ -790,15 +823,19 @@ Product scope documentation should be supported by:
 
 ```text
 README.md
+AGENTS.md
 docs/overview.md
+docs/getting-started.md
 docs/architecture.md
 docs/safety-model.md
 docs/llm-assistance.md
 docs/attack-registry.md
+docs/integrations.md
 docs/telemetry-model.md
 docs/data-model.md
 docs/api.md
 docs/roadmap.md
+frontend/README.md
 ```
 
 ---
