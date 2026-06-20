@@ -13,8 +13,13 @@ from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
 
 
 class DatabaseStore:
-    def list_projects(self, db: Session) -> list[ProjectRead]:
-        return [self._project_read(project) for project in db.scalars(select(Project)).all()]
+    def list_projects(self, db: Session, project_ids: list[str] | None = None) -> list[ProjectRead]:
+        statement = select(Project)
+        if project_ids is not None:
+            if not project_ids:
+                return []
+            statement = statement.where(Project.project_id.in_(project_ids))
+        return [self._project_read(project) for project in db.scalars(statement).all()]
 
     def create_project(self, db: Session, payload: ProjectCreate) -> ProjectRead:
         now = utc_now()

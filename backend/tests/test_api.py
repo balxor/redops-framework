@@ -17,6 +17,16 @@ def auth_headers() -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+def login_headers(email: str, password: str) -> dict[str, str]:
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": email, "password": password},
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
 def test_health_check() -> None:
     response = client.get("/api/v1/health")
 
@@ -58,6 +68,53 @@ def test_admin_user_management_flow() -> None:
 
     assert patch_response.status_code == 200
     assert patch_response.json()["roles"] == ["operator", "reviewer"]
+
+
+def test_project_membership_access_flow() -> None:
+    admin_headers = auth_headers()
+    email = f"member-{uuid4().hex[:8]}@example.com"
+    password = "member-change-me"
+    user_response = client.post(
+        "/api/v1/users",
+        headers=admin_headers,
+        json={
+            "email": email,
+            "full_name": "Member Example",
+            "password": password,
+            "roles": ["operator"],
+            "is_active": True,
+        },
+    )
+    assert user_response.status_code == 201
+    user_id = user_response.json()["user_id"]
+
+    project_response = client.post(
+        "/api/v1/projects",
+        headers=admin_headers,
+        json={
+            "name": "Membership Access Assessment",
+            "engagement_type": "internal_pentest",
+            "status": "draft",
+        },
+    )
+    assert project_response.status_code == 201
+    project_id = project_response.json()["project_id"]
+
+    member_response = client.post(
+        f"/api/v1/projects/{project_id}/members",
+        headers=admin_headers,
+        json={"user_id": user_id, "project_role": "operator"},
+    )
+    assert member_response.status_code == 201
+
+    member_headers = login_headers(email, password)
+    get_response = client.get(f"/api/v1/projects/{project_id}", headers=member_headers)
+    assert get_response.status_code == 200
+    assert get_response.json()["project_id"] == project_id
+
+    list_response = client.get("/api/v1/projects", headers=member_headers)
+    assert list_response.status_code == 200
+    assert [project["project_id"] for project in list_response.json()] == [project_id]
 
 
 def test_project_asset_campaign_flow() -> None:

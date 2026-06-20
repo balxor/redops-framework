@@ -49,10 +49,12 @@ Implemented:
 * Bootstrap admin user
 * Global role guard for workspace APIs
 * Admin user management API
+* Project membership API
+* Project-level access guard for project resources
 
 Not implemented yet:
 
-* Project membership RBAC
+* Fine-grained permission matrix
 * Evidence file storage
 * Report rendering
 * External tool integration

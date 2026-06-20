@@ -465,6 +465,10 @@ GET  /api/v1/users
 POST /api/v1/users
 GET  /api/v1/users/{user_id}
 PATCH /api/v1/users/{user_id}
+GET  /api/v1/projects/{project_id}/members
+POST /api/v1/projects/{project_id}/members
+PATCH /api/v1/projects/{project_id}/members/{project_member_id}
+DELETE /api/v1/projects/{project_id}/members/{project_member_id}
 ```
 
 Run with PostgreSQL:
