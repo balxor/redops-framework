@@ -2,7 +2,8 @@ from fastapi import FastAPI
 
 from app.api.v1.router import api_router
 from app.core.config import settings
-from app.core.database import create_database_schema
+from app.core.database import SessionLocal, create_database_schema
+from app.services.auth import initialize_auth_defaults
 
 
 def create_app() -> FastAPI:
@@ -15,6 +16,9 @@ def create_app() -> FastAPI:
 
     if settings.database_auto_create:
         create_database_schema()
+
+    with SessionLocal() as db:
+        initialize_auth_defaults(db)
 
     return app
 

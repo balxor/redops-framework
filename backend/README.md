@@ -23,6 +23,15 @@ API documentation is available at:
 http://127.0.0.1:8000/docs
 ```
 
+Development login:
+
+```text
+Email: admin@example.com
+Password: admin-change-me
+```
+
+Change these values before using a shared environment.
+
 ## Current Scope
 
 Implemented:
@@ -36,10 +45,13 @@ Implemented:
 * SQLAlchemy persistence layer
 * Alembic initial migration
 * Docker Compose PostgreSQL runtime
+* JWT login
+* Bootstrap admin user
+* Global role guard for workspace APIs
 
 Not implemented yet:
 
-* Authentication and RBAC
+* Project membership RBAC
 * Evidence file storage
 * Report rendering
 * External tool integration

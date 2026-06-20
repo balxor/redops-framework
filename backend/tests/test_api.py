@@ -6,6 +6,16 @@ from app.main import create_app
 client = TestClient(create_app())
 
 
+def auth_headers() -> dict[str, str]:
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "admin@example.com", "password": "admin-change-me"},
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
 def test_health_check() -> None:
     response = client.get("/api/v1/health")
 
@@ -13,9 +23,18 @@ def test_health_check() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_auth_me() -> None:
+    response = client.get("/api/v1/auth/me", headers=auth_headers())
+
+    assert response.status_code == 200
+    assert response.json()["roles"] == ["admin"]
+
+
 def test_project_asset_campaign_flow() -> None:
+    headers = auth_headers()
     project_response = client.post(
         "/api/v1/projects",
+        headers=headers,
         json={
             "name": "Example Red Team Assessment",
             "engagement_type": "red_team",
@@ -30,6 +49,7 @@ def test_project_asset_campaign_flow() -> None:
 
     asset_response = client.post(
         f"/api/v1/projects/{project_id}/assets",
+        headers=headers,
         json={
             "value": "app.example.test",
             "type": "domain",
@@ -43,6 +63,7 @@ def test_project_asset_campaign_flow() -> None:
 
     campaign_response = client.post(
         f"/api/v1/projects/{project_id}/campaigns",
+        headers=headers,
         json={
             "name": "Discovery Validation",
             "objective": "Validate controlled discovery workflow.",
@@ -60,4 +81,3 @@ def test_project_asset_campaign_flow() -> None:
 
     assert campaign_response.status_code == 201
     assert campaign_response.json()["steps"][0]["attack_technique_id"] == "T1046"
-

@@ -447,6 +447,15 @@ Open the API documentation:
 http://127.0.0.1:8000/docs
 ```
 
+Default development login:
+
+```text
+admin@example.com
+admin-change-me
+```
+
+Change the bootstrap admin settings before using a shared environment.
+
 Run with PostgreSQL:
 
 ```bash
