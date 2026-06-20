@@ -1,0 +1,21 @@
+flowchart TD
+    request["User Request"]
+    draft["LLM Draft"]
+    schema["Schema Validation"]
+    attack["ATT&CK Registry Validation"]
+    scope["Scope Validation"]
+    policy["Policy Review"]
+    approval["Human Approval"]
+    action["Controlled Workflow Record"]
+    evidence["Evidence Review"]
+    report["Finding or Report Draft"]
+
+    request --> draft
+    draft --> schema
+    schema --> attack
+    attack --> scope
+    scope --> policy
+    policy --> approval
+    approval --> action
+    action --> evidence
+    evidence --> report

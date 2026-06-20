@@ -1,0 +1,23 @@
+flowchart TD
+    create_project["Create Project"]
+    define_scope["Define Scope"]
+    approve_scope["Approve Scope"]
+    register_assets["Register Assets"]
+    map_attack["Map ATT&CK Techniques"]
+    plan_campaign["Plan Campaign"]
+    approve_steps["Approve Restricted Steps"]
+    record_actions["Record Actions"]
+    attach_evidence["Attach Evidence"]
+    create_findings["Create Findings"]
+    build_report["Build Report"]
+
+    create_project --> define_scope
+    define_scope --> approve_scope
+    approve_scope --> register_assets
+    register_assets --> map_attack
+    map_attack --> plan_campaign
+    plan_campaign --> approve_steps
+    approve_steps --> record_actions
+    record_actions --> attach_evidence
+    attach_evidence --> create_findings
+    create_findings --> build_report

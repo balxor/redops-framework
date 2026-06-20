@@ -292,6 +292,12 @@ redops-framework/
 │   ├── workflow-overview.mmd
 │   └── llm-assisted-flow.mmd
 │
+├── backend/
+│   ├── app/
+│   ├── tests/
+│   ├── requirements.txt
+│   └── README.md
+│
 └── .github/
     ├── ISSUE_TEMPLATE/
     │   ├── documentation.yml
@@ -422,6 +428,22 @@ examples/scope.example.yaml
 examples/campaign.example.yaml
 examples/finding.example.md
 examples/report-outline.example.md
+```
+
+Run the initial backend API skeleton:
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Open the API documentation:
+
+```text
+http://127.0.0.1:8000/docs
 ```
 
 ---

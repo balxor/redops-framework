@@ -1,0 +1,25 @@
+flowchart TD
+    user["User"]
+    api["FastAPI API"]
+    workspace["Project Workspace"]
+    scope["Scope Manager"]
+    assets["Asset Registry"]
+    attack["ATT&CK Registry"]
+    campaigns["Campaign Planner"]
+    safety["Safety Gate"]
+    evidence["Evidence Vault"]
+    findings["Finding Manager"]
+    reports["Report Builder"]
+    audit["Audit Log"]
+
+    user --> api
+    api --> workspace
+    workspace --> scope
+    workspace --> assets
+    workspace --> attack
+    workspace --> campaigns
+    campaigns --> safety
+    safety --> evidence
+    evidence --> findings
+    findings --> reports
+    api --> audit
