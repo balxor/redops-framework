@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RedOps Console — Static Preview</title>
+    <!--
+      Standalone, no-build preview of the RedOps Console UI.
+      Mock data only — not wired to the backend. Open directly in a browser.
+      The real app lives in ../src (React + Vite). See ../README.md to run it.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              ink: { 950: "#0a0c10", 900: "#0f1218", 800: "#161b24", 700: "#1e2530", 600: "#2a3340", 500: "#3a4453" },
+              brand: { 300: "#fca5a5", 400: "#f87171", 500: "#ef4444", 600: "#dc2626", 700: "#b91c1c" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { background: #0a0c10; color: #e2e8f0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+      *::-webkit-scrollbar { width: 8px; height: 8px; }
+      *::-webkit-scrollbar-thumb { background: #2a3340; border-radius: 9999px; }
+      .tab-active { border-color: #ef4444; color: #f1f5f9; }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Banner -->
+    <div class="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-center text-xs text-amber-300">
+      Static preview with mock data — the real app is the React project in <code>frontend/src</code>. See <code>frontend/README.md</code> to run it live.
+    </div>
+
+    <!-- ================= LOGIN ================= -->
+    <section id="view-login" class="flex min-h-[80vh] items-center justify-center px-4">
+      <div class="w-full max-w-sm">
+        <div class="mb-6 flex items-center gap-3">
+          <span class="grid h-10 w-10 place-items-center rounded-lg bg-brand-600/20 text-brand-400">
+            <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4v5c0 5-3.4 8.9-8 10-4.6-1.1-8-5-8-10V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <div>
+            <h1 class="text-lg font-semibold text-slate-100">RedOps Console</h1>
+            <p class="text-xs text-slate-500">Authorized operations only</p>
+          </div>
+        </div>
+        <div class="space-y-4 rounded-xl border border-ink-700 bg-ink-800/60 p-6">
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-slate-300">Email</span>
+            <input value="admin@example.com" class="w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-slate-100" />
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-xs font-medium text-slate-300">Password</span>
+            <input type="password" value="demo-password" class="w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-slate-100" />
+          </label>
+          <button onclick="enterApp()" class="w-full rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">Sign in</button>
+        </div>
+        <p class="mt-4 text-center text-[11px] text-slate-600">Access is restricted to authorized engagement personnel.</p>
+      </div>
+    </section>
+
+    <!-- ================= APP SHELL ================= -->
+    <section id="view-app" class="hidden">
+      <div class="flex h-[calc(100vh-37px)] overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="hidden w-60 shrink-0 flex-col border-r border-ink-800 bg-ink-900 md:flex">
+          <div class="flex items-center gap-2 px-5 py-4">
+            <span class="grid h-8 w-8 place-items-center rounded-md bg-brand-600/20 text-brand-400">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4v5c0 5-3.4 8.9-8 10-4.6-1.1-8-5-8-10V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>
+            </span>
+            <div><p class="text-sm font-semibold text-slate-100">RedOps</p><p class="text-[11px] text-slate-500">Console</p></div>
+          </div>
+          <nav class="flex-1 space-y-1 px-3 py-2" id="nav">
+            <button data-nav="dashboard" class="nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">Dashboard</button>
+            <button data-nav="projects" class="nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">Projects</button>
+            <button data-nav="attack" class="nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">ATT&amp;CK</button>
+            <button data-nav="users" class="nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">Users</button>
+          </nav>
+          <div class="border-t border-ink-800 px-3 py-3 text-[11px] text-slate-600">Authorized engagements only.</div>
+        </aside>
+
+        <!-- Main -->
+        <div class="flex min-w-0 flex-1 flex-col">
+          <header class="flex items-center justify-between border-b border-ink-800 bg-ink-900/80 px-5 py-3">
+            <span class="md:hidden text-sm font-semibold text-slate-200">RedOps</span>
+            <div class="ml-auto flex items-center gap-3">
+              <div class="text-right"><p class="text-sm font-medium text-slate-200">RedOps Admin</p><p class="text-[11px] text-slate-500">admin</p></div>
+              <span class="grid h-9 w-9 place-items-center rounded-full bg-brand-600/20 text-sm font-semibold text-brand-300">RA</span>
+              <button onclick="logout()" class="rounded-md border border-ink-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-ink-800">Log out</button>
+            </div>
+          </header>
+
+          <main class="flex-1 overflow-y-auto px-5 py-6 lg:px-8">
+            <div class="mx-auto max-w-6xl" id="page"></div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // ---- Mock data ------------------------------------------------------
+      const projects = [
+        { id: "project-a1b2c3", name: "Acme Q3 external pentest", type: "External Pentest", client: "Acme Corp", status: "active", updated: "Jun 18, 2026" },
+        { id: "project-d4e5f6", name: "Globex web app assessment", type: "Web Application Pentest", client: "Globex", status: "draft", updated: "Jun 15, 2026" },
+        { id: "project-g7h8i9", name: "Initech red team", type: "Red Team", client: "Initech", status: "completed", updated: "May 30, 2026" },
+        { id: "project-j1k2l3", name: "Umbrella cloud review", type: "Cloud Security Assessment", client: "Umbrella", status: "paused", updated: "Jun 10, 2026" },
+      ];
+      const assets = [
+        { value: "app.acme.com", type: "Domain", crit: "high", env: "production" },
+        { value: "10.0.4.21", type: "Ip Address", crit: "medium", env: "production" },
+        { value: "api.acme.com", type: "Url", crit: "critical", env: "production" },
+      ];
+      const findings = [
+        { title: "Reflected XSS on search endpoint", sev: "high", status: "confirmed", tech: "T1059" },
+        { title: "Verbose error stack traces", sev: "low", status: "under_review", tech: "—" },
+        { title: "Missing rate limiting on login", sev: "medium", status: "draft", tech: "T1110" },
+      ];
+      const techniques = [
+        { id: "T1059", name: "Command and Scripting Interpreter", tactics: "Execution", platforms: "Windows, Linux, macOS, Cloud" },
+        { id: "T1046", name: "Network Service Discovery", tactics: "Discovery", platforms: "Windows, Linux, macOS" },
+      ];
+      const users = [
+        { name: "RedOps Admin", email: "admin@example.com", roles: ["admin"], active: true, last: "Jun 20, 2026 09:12" },
+        { name: "Jane Operator", email: "jane@example.com", roles: ["operator"], active: true, last: "Jun 19, 2026 16:40" },
+        { name: "Sam Reviewer", email: "sam@example.com", roles: ["reviewer"], active: false, last: "—" },
+      ];
+
+      const TONE = {
+        active: "emerald", approved: "emerald", confirmed: "red", critical: "red", high: "red",
+        draft: "slate", completed: "sky", paused: "amber", under_review: "amber", medium: "amber", low: "sky",
+      };
+      function badge(text, key) {
+        const c = TONE[key] || "slate";
+        const map = {
+          emerald: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+          red: "bg-brand-500/15 text-brand-400 ring-brand-500/30",
+          amber: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+          sky: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+          slate: "bg-ink-700 text-slate-300 ring-ink-600",
+          blue: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+          violet: "bg-violet-500/15 text-violet-300 ring-violet-500/30",
+        };
+        return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${map[c]}">${text}</span>`;
+      }
+      const humanize = (s) => s.split("_").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+
+      // ---- Pages ----------------------------------------------------------
+      function pageDashboard() {
+        const stat = (l, v) => `<div class="rounded-xl border border-ink-700 bg-ink-800/60"><div class="px-5 py-4"><p class="text-xs uppercase tracking-wide text-slate-500">${l}</p><p class="mt-1 text-2xl font-semibold text-slate-100">${v}</p></div></div>`;
+        const recent = projects.map((p) => `
+          <button onclick="openProject('${p.id}')" class="flex w-full items-center justify-between rounded-lg border border-ink-700 px-4 py-3 text-left hover:border-ink-600 hover:bg-ink-700/40">
+            <div class="min-w-0"><p class="truncate text-sm font-medium text-slate-100">${p.name}</p><p class="truncate text-xs text-slate-500">${p.type} · ${p.client}</p></div>
+            ${badge(humanize(p.status), p.status)}
+          </button>`).join("");
+        return `
+          <div class="space-y-6">
+            <div><h1 class="text-xl font-semibold text-slate-100">Welcome back, RedOps</h1><p class="text-sm text-slate-500">Overview of your authorized engagements.</p></div>
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">${stat("Total projects", projects.length)}${stat("Active", 1)}${stat("Draft", 1)}${stat("Completed", 1)}</div>
+            <div class="rounded-xl border border-ink-700 bg-ink-800/60">
+              <div class="border-b border-ink-700 px-5 py-4"><h3 class="text-sm font-semibold text-slate-100">Recent projects</h3></div>
+              <div class="space-y-2 px-5 py-4">${recent}</div>
+            </div>
+          </div>`;
+      }
+
+      function pageProjects() {
+        const rows = projects.map((p) => `
+          <tr class="hover:bg-ink-700/30">
+            <td class="px-4 py-2.5"><button onclick="openProject('${p.id}')" class="font-medium text-slate-100 hover:text-brand-400">${p.name}</button></td>
+            <td class="px-4 py-2.5 text-slate-300">${p.type}</td>
+            <td class="px-4 py-2.5 text-slate-300">${p.client}</td>
+            <td class="px-4 py-2.5">${badge(humanize(p.status), p.status)}</td>
+            <td class="px-4 py-2.5 text-slate-300">${p.updated}</td>
+          </tr>`).join("");
+        return `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div><h1 class="text-xl font-semibold text-slate-100">Projects</h1><p class="text-sm text-slate-500">Engagements you have access to.</p></div>
+              <button class="rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">New project</button>
+            </div>
+            <div class="overflow-hidden rounded-lg border border-ink-700">
+              <table class="min-w-full divide-y divide-ink-700 text-sm">
+                <thead><tr>${["Name","Type","Client","Status","Updated"].map((h)=>`<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">${h}</th>`).join("")}</tr></thead>
+                <tbody class="divide-y divide-ink-800">${rows}</tbody>
+              </table>
+            </div>
+          </div>`;
+      }
+
+      let currentProject = null, currentTab = "Overview";
+      const TABS = ["Overview","Scopes","Assets","Campaigns","Actions","Evidence","Findings","Reports","Members","Safety"];
+      function openProject(id) { currentProject = projects.find((p)=>p.id===id); currentTab="Overview"; renderProject(); }
+      function renderProject() {
+        const p = currentProject;
+        const tabs = TABS.map((t)=>`<button onclick="setTab('${t}')" class="whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium ${t===currentTab?'tab-active':'border-transparent text-slate-400 hover:text-slate-200'}">${t}</button>`).join("");
+        document.getElementById("page").innerHTML = `
+          <div class="space-y-6">
+            <div>
+              <button onclick="go('projects')" class="text-xs text-slate-500 hover:text-slate-300">← Projects</button>
+              <div class="mt-1 flex flex-wrap items-center gap-3"><h1 class="text-xl font-semibold text-slate-100">${p.name}</h1>${badge(humanize(p.status), p.status)}</div>
+              <p class="text-sm text-slate-500">${p.type} · ${p.client}</p>
+            </div>
+            <div class="flex gap-1 overflow-x-auto border-b border-ink-700">${tabs}</div>
+            <div id="tab-body"></div>
+          </div>`;
+        renderTab();
+      }
+      function setTab(t) { currentTab = t; renderProject(); }
+      function table(headers, rows) {
+        return `<div class="overflow-hidden rounded-lg border border-ink-700"><table class="min-w-full divide-y divide-ink-700 text-sm">
+          <thead><tr>${headers.map((h)=>`<th class="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">${h}</th>`).join("")}</tr></thead>
+          <tbody class="divide-y divide-ink-800">${rows}</tbody></table></div>`;
+      }
+      function empty(t){ return `<div class="rounded-lg border border-dashed border-ink-600 px-6 py-12 text-center text-sm text-slate-400">${t}</div>`; }
+      function renderTab() {
+        const b = document.getElementById("tab-body"); const p = currentProject;
+        if (currentTab === "Overview") {
+          const row = (l,v)=>`<div class="flex justify-between gap-4 border-b border-ink-700 py-2 text-sm"><span class="text-slate-500">${l}</span><span class="text-right text-slate-200">${v}</span></div>`;
+          b.innerHTML = `<div class="grid gap-4 lg:grid-cols-3">
+            <div class="rounded-xl border border-ink-700 bg-ink-800/60 lg:col-span-2">
+              <div class="border-b border-ink-700 px-5 py-4"><h3 class="text-sm font-semibold text-slate-100">Details</h3></div>
+              <div class="px-5 py-4">${row("Engagement type", p.type)}${row("Status", badge(humanize(p.status), p.status))}${row("Client", p.client)}${row("Timezone","Asia/Jakarta")}${row("Updated", p.updated)}</div>
+            </div>
+            <div class="rounded-xl border border-ink-700 bg-ink-800/60">
+              <div class="border-b border-ink-700 px-5 py-4"><h3 class="text-sm font-semibold text-slate-100">Manage</h3><p class="mt-0.5 text-xs text-slate-400">Update engagement status</p></div>
+              <div class="space-y-3 px-5 py-4">
+                <label class="block"><span class="mb-1 block text-xs font-medium text-slate-300">Status</span>
+                  <select class="w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2 text-sm text-slate-100"><option>Active</option><option>Paused</option><option>Completed</option></select></label>
+                <button class="w-full rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">Save status</button>
+              </div>
+            </div></div>`;
+        } else if (currentTab === "Assets") {
+          const rows = assets.map((a)=>`<tr class="hover:bg-ink-700/30"><td class="px-4 py-2.5 font-mono text-xs text-slate-100">${a.value}</td><td class="px-4 py-2.5 text-slate-300">${a.type}</td><td class="px-4 py-2.5">${badge(humanize(a.crit), a.crit)}</td><td class="px-4 py-2.5 text-slate-300">${a.env}</td></tr>`).join("");
+          b.innerHTML = `<div class="space-y-4"><div class="flex justify-end"><button class="rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">Add asset</button></div>${table(["Value","Type","Criticality","Environment"], rows)}</div>`;
+        } else if (currentTab === "Findings") {
+          const rows = findings.map((f)=>`<tr class="hover:bg-ink-700/30"><td class="px-4 py-2.5 font-medium text-slate-100">${f.title}</td><td class="px-4 py-2.5">${badge(humanize(f.sev), f.sev)}</td><td class="px-4 py-2.5">${badge(humanize(f.status), f.status)}</td><td class="px-4 py-2.5 text-slate-300">${f.tech}</td></tr>`).join("");
+          b.innerHTML = `<div class="space-y-4"><div class="flex justify-end"><button class="rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">Add finding</button></div>${table(["Title","Severity","Status","ATT&CK"], rows)}</div>`;
+        } else if (currentTab === "Safety") {
+          b.innerHTML = `<div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-ink-700 bg-ink-800/60"><div class="border-b border-ink-700 px-5 py-4"><h3 class="text-sm font-semibold text-slate-100">Scope gate</h3><p class="mt-0.5 text-xs text-slate-400">Asset/campaign creation blocked without an approved scope.</p></div>
+              <div class="px-5 py-4"><div class="flex items-center gap-3">${badge("Approved scope active","approved")}<span class="text-sm text-slate-400">1 approved scope</span></div></div></div>
+            <div class="rounded-xl border border-ink-700 bg-ink-800/60"><div class="border-b border-ink-700 px-5 py-4"><h3 class="text-sm font-semibold text-slate-100">Restricted actions</h3></div>
+              <div class="flex flex-wrap gap-2 px-5 py-4">${badge("Exploit Validation","medium")}${badge("Production Environment Validation","medium")}</div></div></div>`;
+        } else if (currentTab === "Members") {
+          const rows = `<tr class="hover:bg-ink-700/30"><td class="px-4 py-2.5 font-mono text-xs text-slate-300">user-9f2a</td><td class="px-4 py-2.5">${badge("Lead Operator","blue")}</td><td class="px-4 py-2.5 text-slate-300">Jun 12, 2026</td></tr>`;
+          b.innerHTML = table(["User ID","Project role","Added"], rows);
+        } else {
+          b.innerHTML = empty(`No ${currentTab.toLowerCase()} in this demo. In the real app this tab lists ${currentTab.toLowerCase()} fetched from the API.`);
+        }
+      }
+
+      function pageAttack() {
+        const rows = techniques.map((t)=>`<tr class="hover:bg-ink-700/30"><td class="px-4 py-2.5 font-mono text-xs text-brand-300">${t.id}</td><td class="px-4 py-2.5 font-medium text-slate-100">${t.name}</td><td class="px-4 py-2.5">${badge(t.tactics,"violet")}</td><td class="px-4 py-2.5 text-slate-300">${t.platforms}</td></tr>`).join("");
+        return `<div class="space-y-6"><div><h1 class="text-xl font-semibold text-slate-100">ATT&CK techniques</h1><p class="text-sm text-slate-500">Reference catalog exposed by the backend.</p></div>${table(["ID","Name","Tactics","Platforms"], rows)}</div>`;
+      }
+      function pageUsers() {
+        const rows = users.map((u)=>`<tr class="hover:bg-ink-700/30"><td class="px-4 py-2.5 font-medium text-slate-100">${u.name}</td><td class="px-4 py-2.5 text-slate-300">${u.email}</td><td class="px-4 py-2.5">${u.roles.map((r)=>badge(humanize(r),"blue")).join(" ")}</td><td class="px-4 py-2.5">${u.active?badge("Active","active"):badge("Disabled","high")}</td><td class="px-4 py-2.5 text-slate-300">${u.last}</td></tr>`).join("");
+        return `<div class="space-y-6"><div class="flex items-center justify-between"><div><h1 class="text-xl font-semibold text-slate-100">Users</h1><p class="text-sm text-slate-500">Manage operator accounts and roles.</p></div><button class="rounded-md bg-brand-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-500">New user</button></div>${table(["Name","Email","Roles","Active","Last login"], rows)}</div>`;
+      }
+
+      // ---- Router ---------------------------------------------------------
+      function go(route) {
+        document.querySelectorAll(".nav-btn").forEach((b) => {
+          const active = b.dataset.nav === route || (route === "project" && b.dataset.nav === "projects");
+          b.className = "nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium " + (active ? "bg-ink-700 text-white" : "text-slate-400 hover:bg-ink-800 hover:text-slate-200");
+        });
+        const page = document.getElementById("page");
+        if (route === "dashboard") page.innerHTML = pageDashboard();
+        else if (route === "projects") page.innerHTML = pageProjects();
+        else if (route === "attack") page.innerHTML = pageAttack();
+        else if (route === "users") page.innerHTML = pageUsers();
+      }
+      function openProjectRoute() { go("project"); renderProject(); }
+      const _openProject = openProject;
+      openProject = (id) => { _openProject(id); document.querySelectorAll(".nav-btn").forEach((b)=>{ const a=b.dataset.nav==="projects"; b.className="nav-btn flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium "+(a?"bg-ink-700 text-white":"text-slate-400 hover:bg-ink-800 hover:text-slate-200"); }); };
+
+      document.getElementById("nav").addEventListener("click", (e) => {
+        const btn = e.target.closest(".nav-btn"); if (btn) go(btn.dataset.nav);
+      });
+      function enterApp() { document.getElementById("view-login").classList.add("hidden"); document.getElementById("view-app").classList.remove("hidden"); go("dashboard"); }
+      function logout() { document.getElementById("view-app").classList.add("hidden"); document.getElementById("view-login").classList.remove("hidden"); }
+    </script>
+  </body>
+</html>

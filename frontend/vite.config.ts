@@ -12,6 +12,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    host: true,
+    // On WSL when the project lives on the Windows drive (/mnt/c/...), the
+    // native file watcher misses changes. Set VITE_USE_POLLING=true to fix HMR.
+    watch: process.env.VITE_USE_POLLING === "true" ? { usePolling: true, interval: 300 } : undefined,
     // Proxy API calls to the backend during development so the browser talks
     // to the Vite origin and avoids CORS. Override the target via VITE_API_TARGET.
     proxy: {
