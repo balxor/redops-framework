@@ -5,12 +5,14 @@ from app.models.asset import Asset
 from app.models.campaign import Campaign
 from app.models.action import Action
 from app.models.evidence import Evidence
+from app.models.finding import Finding
 from app.models.project import Project
 from app.models.scope import Scope
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
 from app.schemas.action import ActionCreate, ActionRead, ActionUpdate
 from app.schemas.evidence import EvidenceCreate, EvidenceRead, EvidenceUpdate
+from app.schemas.finding import FindingCreate, FindingRead, FindingUpdate
 from app.schemas.common import new_id, utc_now
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
@@ -277,6 +279,54 @@ class DatabaseStore:
         db.refresh(evidence)
         return self._evidence_read(evidence)
 
+    def list_findings(self, db: Session, project_id: str) -> list[FindingRead]:
+        statement = select(Finding).where(Finding.project_id == project_id).order_by(Finding.created_at)
+        return [self._finding_read(finding) for finding in db.scalars(statement).all()]
+
+    def create_finding(
+        self,
+        db: Session,
+        project_id: str,
+        created_by: str,
+        payload: FindingCreate,
+    ) -> FindingRead:
+        now = utc_now()
+        finding = Finding(
+            **payload.model_dump(mode="json", exclude={"metadata"}),
+            finding_id=new_id("finding"),
+            project_id=project_id,
+            created_by=created_by,
+            metadata_=payload.metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(finding)
+        db.commit()
+        db.refresh(finding)
+        return self._finding_read(finding)
+
+    def get_finding(self, db: Session, project_id: str, finding_id: str) -> FindingRead | None:
+        finding = db.get(Finding, finding_id)
+        if finding is None or finding.project_id != project_id:
+            return None
+        return self._finding_read(finding)
+
+    def update_finding(
+        self,
+        db: Session,
+        project_id: str,
+        finding_id: str,
+        payload: FindingUpdate,
+    ) -> FindingRead | None:
+        finding = db.get(Finding, finding_id)
+        if finding is None or finding.project_id != project_id:
+            return None
+        self._apply_update(finding, payload.model_dump(mode="json", exclude_unset=True))
+        finding.updated_at = utc_now()
+        db.commit()
+        db.refresh(finding)
+        return self._finding_read(finding)
+
     def _apply_update(self, model: object, data: dict) -> None:
         if "metadata" in data:
             data["metadata_"] = data.pop("metadata")
@@ -386,6 +436,28 @@ class DatabaseStore:
             metadata=evidence.metadata_,
             created_at=evidence.created_at,
             updated_at=evidence.updated_at,
+        )
+
+    def _finding_read(self, finding: Finding) -> FindingRead:
+        return FindingRead(
+            finding_id=finding.finding_id,
+            project_id=finding.project_id,
+            title=finding.title,
+            summary=finding.summary,
+            severity=finding.severity,
+            status=finding.status,
+            affected_assets=finding.affected_assets,
+            attack_technique_id=finding.attack_technique_id,
+            attack_mapping=finding.attack_mapping,
+            evidence_ids=finding.evidence_ids,
+            impact=finding.impact,
+            likelihood=finding.likelihood or "unknown",
+            recommendation=finding.recommendation,
+            reviewed_by=finding.reviewed_by,
+            metadata=finding.metadata_,
+            created_by=finding.created_by,
+            created_at=finding.created_at,
+            updated_at=finding.updated_at,
         )
 
 

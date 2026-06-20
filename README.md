@@ -478,6 +478,10 @@ GET  /api/v1/projects/{project_id}/evidence
 POST /api/v1/projects/{project_id}/evidence
 GET  /api/v1/projects/{project_id}/evidence/{evidence_id}
 PATCH /api/v1/projects/{project_id}/evidence/{evidence_id}
+GET  /api/v1/projects/{project_id}/findings
+POST /api/v1/projects/{project_id}/findings
+GET  /api/v1/projects/{project_id}/findings/{finding_id}
+PATCH /api/v1/projects/{project_id}/findings/{finding_id}
 ```
 
 Run with PostgreSQL:

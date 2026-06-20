@@ -238,6 +238,35 @@ def test_project_asset_campaign_flow() -> None:
     assert evidence_response.status_code == 201
     assert evidence_response.json()["action_id"] == action_response.json()["action_id"]
 
+    finding_response = client.post(
+        f"/api/v1/projects/{project_id}/findings",
+        headers=headers,
+        json={
+            "title": "Endpoint discovery activity was partially detected",
+            "summary": "Discovery validation produced partial endpoint telemetry.",
+            "severity": "medium",
+            "status": "draft",
+            "affected_assets": [asset_response.json()["asset_id"]],
+            "attack_technique_id": "T1046",
+            "attack_mapping": [{"technique_id": "T1046", "tactic": "discovery"}],
+            "evidence_ids": [evidence_response.json()["evidence_id"]],
+            "impact": "Detection coverage requires tuning.",
+            "likelihood": "medium",
+            "recommendation": "Review endpoint detection rule coverage for discovery activity.",
+        },
+    )
+
+    assert finding_response.status_code == 201
+    assert finding_response.json()["evidence_ids"] == [evidence_response.json()["evidence_id"]]
+
+    patch_finding_response = client.patch(
+        f"/api/v1/projects/{project_id}/findings/{finding_response.json()['finding_id']}",
+        headers=headers,
+        json={"status": "under_review"},
+    )
+    assert patch_finding_response.status_code == 200
+    assert patch_finding_response.json()["status"] == "under_review"
+
     list_evidence_response = client.get(f"/api/v1/projects/{project_id}/evidence", headers=headers)
     assert list_evidence_response.status_code == 200
     assert len(list_evidence_response.json()) == 1

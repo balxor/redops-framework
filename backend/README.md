@@ -56,6 +56,7 @@ Implemented:
 * Approved scope requirement for campaign planning
 * Action Log API
 * Evidence metadata API
+* Finding management API
 
 Not implemented yet:
 
