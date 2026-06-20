@@ -219,6 +219,29 @@ def test_project_asset_campaign_flow() -> None:
     assert action_response.status_code == 201
     assert action_response.json()["operator_id"].startswith("user-")
 
+    evidence_response = client.post(
+        f"/api/v1/projects/{project_id}/evidence",
+        headers=headers,
+        json={
+            "action_id": action_response.json()["action_id"],
+            "asset_id": asset_response.json()["asset_id"],
+            "evidence_type": "edr_alert",
+            "file_name": "endpoint-event-review.txt",
+            "file_size": 128,
+            "mime_type": "text/plain",
+            "file_hash_sha256": "a" * 64,
+            "description": "Sanitized endpoint alert reference for discovery validation.",
+            "sanitized": True,
+        },
+    )
+
+    assert evidence_response.status_code == 201
+    assert evidence_response.json()["action_id"] == action_response.json()["action_id"]
+
+    list_evidence_response = client.get(f"/api/v1/projects/{project_id}/evidence", headers=headers)
+    assert list_evidence_response.status_code == 200
+    assert len(list_evidence_response.json()) == 1
+
     list_actions_response = client.get(f"/api/v1/projects/{project_id}/actions", headers=headers)
     assert list_actions_response.status_code == 200
     assert len(list_actions_response.json()) == 1

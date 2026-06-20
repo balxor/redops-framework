@@ -4,11 +4,13 @@ from sqlalchemy.orm import Session
 from app.models.asset import Asset
 from app.models.campaign import Campaign
 from app.models.action import Action
+from app.models.evidence import Evidence
 from app.models.project import Project
 from app.models.scope import Scope
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
 from app.schemas.action import ActionCreate, ActionRead, ActionUpdate
+from app.schemas.evidence import EvidenceCreate, EvidenceRead, EvidenceUpdate
 from app.schemas.common import new_id, utc_now
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
@@ -226,6 +228,55 @@ class DatabaseStore:
         db.refresh(action)
         return self._action_read(action)
 
+    def list_evidence(self, db: Session, project_id: str) -> list[EvidenceRead]:
+        statement = select(Evidence).where(Evidence.project_id == project_id).order_by(Evidence.created_at)
+        return [self._evidence_read(evidence) for evidence in db.scalars(statement).all()]
+
+    def create_evidence(
+        self,
+        db: Session,
+        project_id: str,
+        uploaded_by: str,
+        payload: EvidenceCreate,
+    ) -> EvidenceRead:
+        now = utc_now()
+        evidence = Evidence(
+            **payload.model_dump(mode="json", exclude={"metadata"}),
+            evidence_id=new_id("evidence"),
+            project_id=project_id,
+            uploaded_by=uploaded_by,
+            uploaded_at=now,
+            metadata_=payload.metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(evidence)
+        db.commit()
+        db.refresh(evidence)
+        return self._evidence_read(evidence)
+
+    def get_evidence(self, db: Session, project_id: str, evidence_id: str) -> EvidenceRead | None:
+        evidence = db.get(Evidence, evidence_id)
+        if evidence is None or evidence.project_id != project_id:
+            return None
+        return self._evidence_read(evidence)
+
+    def update_evidence(
+        self,
+        db: Session,
+        project_id: str,
+        evidence_id: str,
+        payload: EvidenceUpdate,
+    ) -> EvidenceRead | None:
+        evidence = db.get(Evidence, evidence_id)
+        if evidence is None or evidence.project_id != project_id:
+            return None
+        self._apply_update(evidence, payload.model_dump(mode="json", exclude_unset=True))
+        evidence.updated_at = utc_now()
+        db.commit()
+        db.refresh(evidence)
+        return self._evidence_read(evidence)
+
     def _apply_update(self, model: object, data: dict) -> None:
         if "metadata" in data:
             data["metadata_"] = data.pop("metadata")
@@ -313,6 +364,28 @@ class DatabaseStore:
             metadata=action.metadata_,
             created_at=action.created_at,
             updated_at=action.updated_at,
+        )
+
+    def _evidence_read(self, evidence: Evidence) -> EvidenceRead:
+        return EvidenceRead(
+            evidence_id=evidence.evidence_id,
+            project_id=evidence.project_id,
+            action_id=evidence.action_id,
+            finding_id=evidence.finding_id,
+            asset_id=evidence.asset_id,
+            uploaded_by=evidence.uploaded_by,
+            evidence_type=evidence.evidence_type,
+            file_name=evidence.file_name,
+            file_size=evidence.file_size,
+            mime_type=evidence.mime_type,
+            file_hash_sha256=evidence.file_hash_sha256,
+            description=evidence.description,
+            sanitized=evidence.sanitized,
+            captured_at=evidence.captured_at,
+            uploaded_at=evidence.uploaded_at,
+            metadata=evidence.metadata_,
+            created_at=evidence.created_at,
+            updated_at=evidence.updated_at,
         )
 
 

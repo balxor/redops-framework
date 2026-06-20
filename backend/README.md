@@ -55,11 +55,12 @@ Implemented:
 * Scope allowlist enforcement for assets
 * Approved scope requirement for campaign planning
 * Action Log API
+* Evidence metadata API
 
 Not implemented yet:
 
 * Fine-grained permission matrix
-* Evidence file storage
+* Evidence file upload and storage
 * Report rendering
 * External tool integration
 * LLM workflow execution
