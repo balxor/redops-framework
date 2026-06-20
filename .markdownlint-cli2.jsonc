@@ -1,0 +1,30 @@
+{
+  // markdownlint-cli2 configuration for RedOps Framework.
+  // Rule reference: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+  "config": {
+    "default": true,
+
+    // Line length — prose and tables run long on purpose; not enforced.
+    "MD013": false,
+
+    // Inline HTML — allowed (e.g. shields.io badges, occasional markup).
+    "MD033": false,
+
+    // Unordered-list bullet character — not enforced ("*" and "-" both fine).
+    "MD004": false,
+
+    // Visual table-pipe alignment — too strict for hand-edited tables.
+    "MD060": false,
+
+    // Duplicate headings are allowed when they live under different sections
+    // (e.g. repeated "### Scope" / "### Deliverables" per roadmap version).
+    "MD024": { "siblings_only": true }
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/dist/**",
+    "**/.pytest_cache/**"
+  ]
+}

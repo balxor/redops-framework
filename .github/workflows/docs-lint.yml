@@ -1,0 +1,43 @@
+name: Docs Lint
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "**/*.md"
+      - "**/*.json"
+      - ".markdownlint-cli2.jsonc"
+      - ".github/workflows/docs-lint.yml"
+      - ".github/scripts/validate_json.py"
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "**/*.json"
+      - ".markdownlint-cli2.jsonc"
+      - ".github/workflows/docs-lint.yml"
+      - ".github/scripts/validate_json.py"
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    name: Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "**/*.md"
+
+  json:
+    name: JSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate JSON
+        run: python .github/scripts/validate_json.py

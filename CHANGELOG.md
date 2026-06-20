@@ -11,6 +11,7 @@ Versions track the stages defined in `docs/roadmap.md`.
 ## [Unreleased]
 
 ### Added
+
 - Web console (`frontend/`): React + Vite + TypeScript + Tailwind + TanStack
   Query client over the API, with auth, dashboard, projects, project detail
   tabs, users, and ATT&CK reference views.
@@ -24,10 +25,12 @@ Versions track the stages defined in `docs/roadmap.md`.
   `docs/product-scope.md`.
 
 ### Changed
+
 - `README.md`, `docs/architecture.md`, and `docs/roadmap.md` now reference the
   implemented frontend stack (React + Vite) and the web console.
 
 ### Notes
+
 - ATT&CK technique data remains a placeholder (`/attack/techniques` returns a
   stub) until the ATT&CK registry / STIX import is implemented.
 
@@ -38,6 +41,7 @@ Versions track the stages defined in `docs/roadmap.md`.
 Initial community draft (documentation-first), per roadmap v0.1.
 
 ### Added
+
 - Repository structure: `README.md`, `LICENSE`, `SECURITY.md`,
   `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, GitHub issue/PR templates.
 - Documentation set in `docs/` (overview, product scope, architecture, ATT&CK
