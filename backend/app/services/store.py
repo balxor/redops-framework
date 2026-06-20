@@ -3,10 +3,12 @@ from sqlalchemy.orm import Session
 
 from app.models.asset import Asset
 from app.models.campaign import Campaign
+from app.models.action import Action
 from app.models.project import Project
 from app.models.scope import Scope
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
+from app.schemas.action import ActionCreate, ActionRead, ActionUpdate
 from app.schemas.common import new_id, utc_now
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
@@ -176,6 +178,54 @@ class DatabaseStore:
         db.refresh(campaign)
         return self._campaign_read(campaign)
 
+    def list_actions(self, db: Session, project_id: str) -> list[ActionRead]:
+        statement = select(Action).where(Action.project_id == project_id).order_by(Action.created_at)
+        return [self._action_read(action) for action in db.scalars(statement).all()]
+
+    def create_action(
+        self,
+        db: Session,
+        project_id: str,
+        operator_id: str,
+        payload: ActionCreate,
+    ) -> ActionRead:
+        now = utc_now()
+        action = Action(
+            **payload.model_dump(mode="json", exclude={"metadata"}),
+            action_id=new_id("action"),
+            project_id=project_id,
+            operator_id=operator_id,
+            metadata_=payload.metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(action)
+        db.commit()
+        db.refresh(action)
+        return self._action_read(action)
+
+    def get_action(self, db: Session, project_id: str, action_id: str) -> ActionRead | None:
+        action = db.get(Action, action_id)
+        if action is None or action.project_id != project_id:
+            return None
+        return self._action_read(action)
+
+    def update_action(
+        self,
+        db: Session,
+        project_id: str,
+        action_id: str,
+        payload: ActionUpdate,
+    ) -> ActionRead | None:
+        action = db.get(Action, action_id)
+        if action is None or action.project_id != project_id:
+            return None
+        self._apply_update(action, payload.model_dump(mode="json", exclude_unset=True))
+        action.updated_at = utc_now()
+        db.commit()
+        db.refresh(action)
+        return self._action_read(action)
+
     def _apply_update(self, model: object, data: dict) -> None:
         if "metadata" in data:
             data["metadata_"] = data.pop("metadata")
@@ -243,6 +293,26 @@ class DatabaseStore:
             metadata=campaign.metadata_,
             created_at=campaign.created_at,
             updated_at=campaign.updated_at,
+        )
+
+    def _action_read(self, action: Action) -> ActionRead:
+        return ActionRead(
+            action_id=action.action_id,
+            project_id=action.project_id,
+            campaign_id=action.campaign_id,
+            campaign_step_id=action.campaign_step_id,
+            asset_id=action.asset_id,
+            operator_id=action.operator_id,
+            action_type=action.action_type,
+            action_summary=action.action_summary,
+            action_detail=action.action_detail,
+            result=action.result,
+            detection_status=action.detection_status,
+            started_at=action.started_at,
+            ended_at=action.ended_at,
+            metadata=action.metadata_,
+            created_at=action.created_at,
+            updated_at=action.updated_at,
         )
 
 

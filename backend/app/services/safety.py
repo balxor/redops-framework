@@ -55,6 +55,14 @@ def validate_campaign_update(db: Session, project_id: str, payload: CampaignUpda
         _validate_campaign_steps(payload.steps)
 
 
+def validate_action_create(db: Session, project_id: str) -> None:
+    _require_approved_scope(db, project_id)
+
+
+def validate_action_update(db: Session, project_id: str) -> None:
+    _require_approved_scope(db, project_id)
+
+
 def _approved_scopes(db: Session, project_id: str) -> list[Scope]:
     statement = select(Scope).where(Scope.project_id == project_id, Scope.status == "approved")
     return list(db.scalars(statement).all())
@@ -108,4 +116,3 @@ def _validate_campaign_steps(steps: list) -> None:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Approved or executed campaign steps must keep approval_required enabled",
             )
-

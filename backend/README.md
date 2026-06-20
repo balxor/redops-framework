@@ -54,6 +54,7 @@ Implemented:
 * Safety summary API
 * Scope allowlist enforcement for assets
 * Approved scope requirement for campaign planning
+* Action Log API
 
 Not implemented yet:
 

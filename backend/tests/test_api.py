@@ -202,6 +202,27 @@ def test_project_asset_campaign_flow() -> None:
     assert campaign_response.status_code == 201
     assert campaign_response.json()["steps"][0]["attack_technique_id"] == "T1046"
 
+    action_response = client.post(
+        f"/api/v1/projects/{project_id}/actions",
+        headers=headers,
+        json={
+            "campaign_id": campaign_response.json()["campaign_id"],
+            "asset_id": asset_response.json()["asset_id"],
+            "action_type": "detection_validation_note",
+            "action_summary": "Reviewed endpoint telemetry for discovery activity.",
+            "action_detail": "Telemetry review was performed against approved lab scope.",
+            "result": "executed",
+            "detection_status": "partially_detected",
+        },
+    )
+
+    assert action_response.status_code == 201
+    assert action_response.json()["operator_id"].startswith("user-")
+
+    list_actions_response = client.get(f"/api/v1/projects/{project_id}/actions", headers=headers)
+    assert list_actions_response.status_code == 200
+    assert len(list_actions_response.json()) == 1
+
 
 def test_safety_gate_rejects_out_of_scope_asset() -> None:
     headers = auth_headers()
