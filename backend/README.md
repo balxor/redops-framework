@@ -2,7 +2,9 @@
 
 FastAPI backend skeleton for RedOps Framework.
 
-This implementation provides the first API surface for projects, scopes, assets, campaigns, ATT&CK techniques, and health checks. Data is stored in memory for the initial implementation phase.
+This implementation provides the first API surface for projects, scopes, assets, campaigns, ATT&CK techniques, and health checks.
+
+The application uses SQLAlchemy for persistence and Alembic for database migrations. SQLite is used by default for local development. Docker Compose runs PostgreSQL.
 
 ## Run Locally
 
@@ -11,6 +13,7 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
@@ -30,14 +33,14 @@ Implemented:
 * Project asset CRUD
 * Campaign CRUD
 * ATT&CK technique lookup placeholder
+* SQLAlchemy persistence layer
+* Alembic initial migration
+* Docker Compose PostgreSQL runtime
 
 Not implemented yet:
 
-* Database persistence
-* Alembic migrations
 * Authentication and RBAC
 * Evidence file storage
 * Report rendering
 * External tool integration
 * LLM workflow execution
-
