@@ -2,14 +2,11 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   useActions,
-  useAssets,
   useCampaigns,
   useEvidence,
-  useFindings,
   useMembers,
   useProject,
   useReports,
-  useSafetySummary,
   useScopes,
 } from "@/hooks/queries";
 import { Badge, ErrorState, Loading } from "@/components/ui";

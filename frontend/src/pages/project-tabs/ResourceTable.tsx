@@ -24,7 +24,7 @@ export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar }
     <div className="space-y-4">
       {toolbar && <div className="flex justify-end">{toolbar}</div>}
       {isLoading && <Loading />}
-      {error && <ErrorState error={error} />}
+      {error ? <ErrorState error={error} /> : null}
       {data && data.length === 0 && <EmptyState title={emptyTitle} />}
       {data && data.length > 0 && (
         <Card>
