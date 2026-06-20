@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from uuid import uuid4
 
 from app.main import create_app
 
@@ -28,6 +29,35 @@ def test_auth_me() -> None:
 
     assert response.status_code == 200
     assert response.json()["roles"] == ["admin"]
+
+
+def test_admin_user_management_flow() -> None:
+    headers = auth_headers()
+    email = f"operator-{uuid4().hex[:8]}@example.com"
+    create_response = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={
+            "email": email,
+            "full_name": "Operator Example",
+            "password": "operator-change-me",
+            "roles": ["operator"],
+            "is_active": True,
+        },
+    )
+
+    assert create_response.status_code == 201
+    user = create_response.json()
+    assert user["roles"] == ["operator"]
+
+    patch_response = client.patch(
+        f"/api/v1/users/{user['user_id']}",
+        headers=headers,
+        json={"roles": ["operator", "reviewer"], "full_name": "Operator Reviewer"},
+    )
+
+    assert patch_response.status_code == 200
+    assert patch_response.json()["roles"] == ["operator", "reviewer"]
 
 
 def test_project_asset_campaign_flow() -> None:

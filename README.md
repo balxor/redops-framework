@@ -456,6 +456,17 @@ admin-change-me
 
 Change the bootstrap admin settings before using a shared environment.
 
+Auth endpoints:
+
+```text
+POST /api/v1/auth/login
+GET  /api/v1/auth/me
+GET  /api/v1/users
+POST /api/v1/users
+GET  /api/v1/users/{user_id}
+PATCH /api/v1/users/{user_id}
+```
+
 Run with PostgreSQL:
 
 ```bash

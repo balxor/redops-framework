@@ -48,6 +48,7 @@ Implemented:
 * JWT login
 * Bootstrap admin user
 * Global role guard for workspace APIs
+* Admin user management API
 
 Not implemented yet:
 
