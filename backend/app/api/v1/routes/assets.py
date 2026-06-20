@@ -6,6 +6,7 @@ from app.core.rbac import get_current_user
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.schemas.user import CurrentUser
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
+from app.services.safety import validate_asset_create, validate_asset_update
 from app.services.store import store
 
 router = APIRouter()
@@ -29,6 +30,7 @@ def create_asset(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> AssetRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES | {"operator"})
+    validate_asset_create(db, project_id, payload)
     return store.create_asset(db, project_id, payload)
 
 
@@ -55,6 +57,7 @@ def update_asset(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> AssetRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES | {"operator"})
+    validate_asset_update(db, project_id, payload)
     asset = store.update_asset(db, project_id, asset_id, payload)
     if asset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
@@ -72,4 +75,3 @@ def delete_asset(
     deleted = store.delete_asset(db, project_id, asset_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
-

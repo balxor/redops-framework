@@ -134,6 +134,39 @@ def test_project_asset_campaign_flow() -> None:
     project = project_response.json()
     project_id = project["project_id"]
 
+    scope_response = client.post(
+        f"/api/v1/projects/{project_id}/scopes",
+        headers=headers,
+        json={
+            "status": "approved",
+            "allowed_targets": [
+                {
+                    "type": "domain",
+                    "value": "app.example.test",
+                    "environment": "lab",
+                }
+            ],
+            "forbidden_targets": [
+                {
+                    "type": "domain",
+                    "value": "forbidden.example.test",
+                    "environment": "lab",
+                }
+            ],
+            "test_window": {
+                "start": "2026-06-20T00:00:00Z",
+                "end": "2026-06-30T00:00:00Z",
+                "timezone": "Asia/Jakarta",
+            },
+            "approval_required": True,
+        },
+    )
+    assert scope_response.status_code == 201
+
+    safety_response = client.get(f"/api/v1/projects/{project_id}/safety/summary", headers=headers)
+    assert safety_response.status_code == 200
+    assert safety_response.json()["has_approved_scope"] is True
+
     asset_response = client.post(
         f"/api/v1/projects/{project_id}/assets",
         headers=headers,
@@ -168,3 +201,55 @@ def test_project_asset_campaign_flow() -> None:
 
     assert campaign_response.status_code == 201
     assert campaign_response.json()["steps"][0]["attack_technique_id"] == "T1046"
+
+
+def test_safety_gate_rejects_out_of_scope_asset() -> None:
+    headers = auth_headers()
+    project_response = client.post(
+        "/api/v1/projects",
+        headers=headers,
+        json={
+            "name": "Out of Scope Assessment",
+            "engagement_type": "internal_pentest",
+            "status": "draft",
+        },
+    )
+    assert project_response.status_code == 201
+    project_id = project_response.json()["project_id"]
+
+    scope_response = client.post(
+        f"/api/v1/projects/{project_id}/scopes",
+        headers=headers,
+        json={
+            "status": "approved",
+            "allowed_targets": [
+                {
+                    "type": "domain",
+                    "value": "allowed.example.test",
+                    "environment": "lab",
+                }
+            ],
+            "forbidden_targets": [],
+            "test_window": {
+                "start": "2026-06-20T00:00:00Z",
+                "end": "2026-06-30T00:00:00Z",
+                "timezone": "Asia/Jakarta",
+            },
+            "approval_required": True,
+        },
+    )
+    assert scope_response.status_code == 201
+
+    asset_response = client.post(
+        f"/api/v1/projects/{project_id}/assets",
+        headers=headers,
+        json={
+            "value": "outside.example.test",
+            "type": "domain",
+            "environment": "lab",
+            "criticality": "medium",
+        },
+    )
+
+    assert asset_response.status_code == 403
+    assert asset_response.json()["detail"] == "Asset target is outside approved scope"

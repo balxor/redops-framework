@@ -469,6 +469,7 @@ GET  /api/v1/projects/{project_id}/members
 POST /api/v1/projects/{project_id}/members
 PATCH /api/v1/projects/{project_id}/members/{project_member_id}
 DELETE /api/v1/projects/{project_id}/members/{project_member_id}
+GET  /api/v1/projects/{project_id}/safety/summary
 ```
 
 Run with PostgreSQL:

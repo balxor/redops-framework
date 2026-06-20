@@ -51,6 +51,9 @@ Implemented:
 * Admin user management API
 * Project membership API
 * Project-level access guard for project resources
+* Safety summary API
+* Scope allowlist enforcement for assets
+* Approved scope requirement for campaign planning
 
 Not implemented yet:
 

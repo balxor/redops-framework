@@ -6,6 +6,7 @@ from app.core.rbac import get_current_user
 from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
 from app.schemas.user import CurrentUser
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
+from app.services.safety import validate_campaign_create, validate_campaign_update
 from app.services.store import store
 
 router = APIRouter()
@@ -29,6 +30,7 @@ def create_campaign(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> CampaignRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
+    validate_campaign_create(db, project_id, payload)
     return store.create_campaign(db, project_id, payload)
 
 
@@ -55,8 +57,8 @@ def update_campaign(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> CampaignRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
+    validate_campaign_update(db, project_id, payload)
     campaign = store.update_campaign(db, project_id, campaign_id, payload)
     if campaign is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
     return campaign
-
