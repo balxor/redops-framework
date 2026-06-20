@@ -482,6 +482,10 @@ GET  /api/v1/projects/{project_id}/findings
 POST /api/v1/projects/{project_id}/findings
 GET  /api/v1/projects/{project_id}/findings/{finding_id}
 PATCH /api/v1/projects/{project_id}/findings/{finding_id}
+GET  /api/v1/projects/{project_id}/reports
+POST /api/v1/projects/{project_id}/reports
+GET  /api/v1/projects/{project_id}/reports/{report_id}
+PATCH /api/v1/projects/{project_id}/reports/{report_id}
 ```
 
 Run with PostgreSQL:

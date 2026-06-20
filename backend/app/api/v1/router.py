@@ -12,6 +12,7 @@ from app.api.v1.routes import (
     health,
     members,
     projects,
+    reports,
     safety,
     scopes,
     users,
@@ -79,6 +80,12 @@ api_router.include_router(
     findings.router,
     prefix="/projects/{project_id}/findings",
     tags=["findings"],
+    dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
+)
+api_router.include_router(
+    reports.router,
+    prefix="/projects/{project_id}/reports",
+    tags=["reports"],
     dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
 )
 api_router.include_router(attack.router, prefix="/attack", tags=["attack"])

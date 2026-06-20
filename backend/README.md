@@ -57,11 +57,13 @@ Implemented:
 * Action Log API
 * Evidence metadata API
 * Finding management API
+* Report metadata API
 
 Not implemented yet:
 
 * Fine-grained permission matrix
 * Evidence file upload and storage
+* Report rendering and export
 * Report rendering
 * External tool integration
 * LLM workflow execution

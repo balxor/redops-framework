@@ -6,6 +6,7 @@ from app.models.campaign import Campaign
 from app.models.action import Action
 from app.models.evidence import Evidence
 from app.models.finding import Finding
+from app.models.report import Report
 from app.models.project import Project
 from app.models.scope import Scope
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
@@ -13,6 +14,7 @@ from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
 from app.schemas.action import ActionCreate, ActionRead, ActionUpdate
 from app.schemas.evidence import EvidenceCreate, EvidenceRead, EvidenceUpdate
 from app.schemas.finding import FindingCreate, FindingRead, FindingUpdate
+from app.schemas.report import ReportCreate, ReportRead, ReportUpdate
 from app.schemas.common import new_id, utc_now
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
@@ -327,6 +329,52 @@ class DatabaseStore:
         db.refresh(finding)
         return self._finding_read(finding)
 
+    def list_reports(self, db: Session, project_id: str) -> list[ReportRead]:
+        statement = select(Report).where(Report.project_id == project_id).order_by(Report.created_at)
+        return [self._report_read(report) for report in db.scalars(statement).all()]
+
+    def create_report(
+        self,
+        db: Session,
+        project_id: str,
+        payload: ReportCreate,
+    ) -> ReportRead:
+        now = utc_now()
+        report = Report(
+            **payload.model_dump(mode="json", exclude={"metadata"}),
+            report_id=new_id("report"),
+            project_id=project_id,
+            metadata_=payload.metadata,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(report)
+        db.commit()
+        db.refresh(report)
+        return self._report_read(report)
+
+    def get_report(self, db: Session, project_id: str, report_id: str) -> ReportRead | None:
+        report = db.get(Report, report_id)
+        if report is None or report.project_id != project_id:
+            return None
+        return self._report_read(report)
+
+    def update_report(
+        self,
+        db: Session,
+        project_id: str,
+        report_id: str,
+        payload: ReportUpdate,
+    ) -> ReportRead | None:
+        report = db.get(Report, report_id)
+        if report is None or report.project_id != project_id:
+            return None
+        self._apply_update(report, payload.model_dump(mode="json", exclude_unset=True))
+        report.updated_at = utc_now()
+        db.commit()
+        db.refresh(report)
+        return self._report_read(report)
+
     def _apply_update(self, model: object, data: dict) -> None:
         if "metadata" in data:
             data["metadata_"] = data.pop("metadata")
@@ -458,6 +506,28 @@ class DatabaseStore:
             created_by=finding.created_by,
             created_at=finding.created_at,
             updated_at=finding.updated_at,
+        )
+
+    def _report_read(self, report: Report) -> ReportRead:
+        return ReportRead(
+            report_id=report.report_id,
+            project_id=report.project_id,
+            title=report.title,
+            version=report.version,
+            status=report.status,
+            format=report.format,
+            file_path=report.file_path,
+            finding_ids=report.finding_ids,
+            evidence_ids=report.evidence_ids,
+            sections=report.sections,
+            prepared_by=report.prepared_by,
+            reviewed_by=report.reviewed_by,
+            generated_by=report.generated_by,
+            generated_at=report.generated_at,
+            published_at=report.published_at,
+            metadata=report.metadata_,
+            created_at=report.created_at,
+            updated_at=report.updated_at,
         )
 
 

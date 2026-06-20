@@ -267,6 +267,37 @@ def test_project_asset_campaign_flow() -> None:
     assert patch_finding_response.status_code == 200
     assert patch_finding_response.json()["status"] == "under_review"
 
+    report_response = client.post(
+        f"/api/v1/projects/{project_id}/reports",
+        headers=headers,
+        json={
+            "title": "Example Red Team Assessment Report",
+            "version": "0.1",
+            "status": "draft",
+            "format": "markdown",
+            "finding_ids": [finding_response.json()["finding_id"]],
+            "evidence_ids": [evidence_response.json()["evidence_id"]],
+            "sections": [
+                {
+                    "key": "executive_summary",
+                    "title": "Executive Summary",
+                    "content": "Draft summary for reviewed findings.",
+                    "order": 1,
+                }
+            ],
+        },
+    )
+    assert report_response.status_code == 201
+    assert report_response.json()["finding_ids"] == [finding_response.json()["finding_id"]]
+
+    patch_report_response = client.patch(
+        f"/api/v1/projects/{project_id}/reports/{report_response.json()['report_id']}",
+        headers=headers,
+        json={"status": "under_review"},
+    )
+    assert patch_report_response.status_code == 200
+    assert patch_report_response.json()["status"] == "under_review"
+
     list_evidence_response = client.get(f"/api/v1/projects/{project_id}/evidence", headers=headers)
     assert list_evidence_response.status_code == 200
     assert len(list_evidence_response.json()) == 1

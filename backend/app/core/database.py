@@ -26,6 +26,6 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def create_database_schema() -> None:
-    from app.models import action, asset, campaign, evidence, finding, membership, project, scope, user  # noqa: F401
+    from app.models import action, asset, campaign, evidence, finding, membership, project, report, scope, user  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
