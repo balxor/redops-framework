@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useActions, useAssets, useCreateEvidence, useEvidence, useFindings } from "@/hooks/queries";
+import { useActions, useAssets, useCreateEvidence, useEvidence, useFindings, useUpdateEvidence } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { formatDateTime, humanize } from "@/lib/format";
@@ -13,13 +13,37 @@ export function EvidenceTab({ projectId }: { projectId: string }) {
   const actions = useActions(projectId);
   const assets = useAssets(projectId);
   const findings = useFindings(projectId);
+  const update = useUpdateEvidence(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<EvidenceRead>[] = [
     { header: "Description", render: (e) => <span className="font-medium text-slate-100">{e.description}</span> },
     { header: "Type", render: (e) => humanize(e.evidence_type) },
-    { header: "Sanitized", render: (e) => (e.sanitized ? <Badge tone="green">Yes</Badge> : <Badge tone="amber">No</Badge>) },
+    {
+      header: "Sanitized",
+      render: (e) =>
+        canUpdate ? (
+          <Select
+            value={e.sanitized ? "true" : "false"}
+            disabled={update.isPending}
+            onChange={(event) =>
+              update.mutate({
+                evidenceId: e.evidence_id,
+                body: { sanitized: event.target.value === "true" },
+              })
+            }
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </Select>
+        ) : e.sanitized ? (
+          <Badge tone="green">Yes</Badge>
+        ) : (
+          <Badge tone="amber">No</Badge>
+        ),
+    },
     { header: "Captured", render: (e) => formatDateTime(e.captured_at) },
   ];
 
@@ -32,6 +56,7 @@ export function EvidenceTab({ projectId }: { projectId: string }) {
         rowKey={(e) => e.evidence_id}
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add evidence</Button> : undefined}
       />
+      {update.error && <ErrorState error={update.error} />}
       <CreateEvidenceModal
         projectId={projectId}
         open={open}

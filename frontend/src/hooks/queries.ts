@@ -32,6 +32,7 @@ import type {
   DetectionGapCreate,
   DetectionGapUpdate,
   EvidenceCreate,
+  EvidenceUpdate,
   FindingCreate,
   FindingUpdate,
   LlmTaskCreate,
@@ -331,6 +332,18 @@ export function useCreateEvidence(projectId: string) {
   return useMutation({
     mutationFn: (body: EvidenceCreate) => evidenceApi.create(projectId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.evidence(projectId) }),
+  });
+}
+
+export function useUpdateEvidence(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ evidenceId, body }: { evidenceId: string; body: EvidenceUpdate }) =>
+      evidenceApi.update(projectId, evidenceId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.evidence(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
   });
 }
 
