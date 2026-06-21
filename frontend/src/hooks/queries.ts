@@ -274,6 +274,19 @@ export function useRejectApproval(projectId: string) {
   });
 }
 
+export function useRevokeApproval(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ approvalId, body }: { approvalId: string; body: ApprovalDecision }) =>
+      approvalsApi.revoke(projectId, approvalId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.approvals(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+      qc.invalidateQueries({ queryKey: keys.safety(projectId) });
+    },
+  });
+}
+
 export function useCreateLlmTask(projectId: string) {
   const qc = useQueryClient();
   return useMutation({

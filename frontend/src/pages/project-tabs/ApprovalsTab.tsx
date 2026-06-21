@@ -1,6 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useApproveApproval, useApprovals, useCreateApproval, useRejectApproval } from "@/hooks/queries";
+import {
+  useApproveApproval,
+  useApprovals,
+  useCreateApproval,
+  useRejectApproval,
+  useRevokeApproval,
+} from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { formatDateTime, humanize, statusTone } from "@/lib/format";
@@ -15,6 +21,7 @@ export function ApprovalsTab({ projectId }: { projectId: string }) {
   const canDecide = hasRole("admin", "lead_operator");
   const approve = useApproveApproval(projectId);
   const reject = useRejectApproval(projectId);
+  const revoke = useRevokeApproval(projectId);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +32,15 @@ export function ApprovalsTab({ projectId }: { projectId: string }) {
       await mutation.mutateAsync({ approvalId, body: { decision_note: decision === "approve" ? "Approved in console." : "Rejected in console." } });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update approval.");
+    }
+  }
+
+  async function revokeApproval(approvalId: string) {
+    setError(null);
+    try {
+      await revoke.mutateAsync({ approvalId, body: { decision_note: "Revoked in console." } });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to revoke approval.");
     }
   }
 
@@ -46,6 +62,10 @@ export function ApprovalsTab({ projectId }: { projectId: string }) {
               Reject
             </Button>
           </div>
+        ) : canDecide && approval.status === "approved" ? (
+          <Button variant="danger" onClick={() => revokeApproval(approval.approval_id)} loading={revoke.isPending}>
+            Revoke
+          </Button>
         ) : (
           approval.decided_at ? formatDateTime(approval.decided_at) : "-"
         ),
