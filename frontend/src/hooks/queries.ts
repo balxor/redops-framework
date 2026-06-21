@@ -27,6 +27,7 @@ import type {
   ApprovalCreate,
   ApprovalDecision,
   CampaignCreate,
+  CampaignUpdate,
   DetectionGapCreate,
   DetectionGapUpdate,
   EvidenceCreate,
@@ -172,6 +173,19 @@ export function useCreateCampaign(projectId: string) {
   return useMutation({
     mutationFn: (body: CampaignCreate) => campaignsApi.create(projectId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.campaigns(projectId) }),
+  });
+}
+
+export function useUpdateCampaign(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ campaignId, body }: { campaignId: string; body: CampaignUpdate }) =>
+      campaignsApi.update(projectId, campaignId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.campaigns(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+      qc.invalidateQueries({ queryKey: keys.safety(projectId) });
+    },
   });
 }
 

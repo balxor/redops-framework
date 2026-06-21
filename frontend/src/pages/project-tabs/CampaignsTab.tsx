@@ -1,22 +1,50 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useCampaigns, useCreateCampaign } from "@/hooks/queries";
-import { Badge, Button, ErrorState, Field, Input, Textarea } from "@/components/ui";
+import { useCampaigns, useCreateCampaign, useUpdateCampaign } from "@/hooks/queries";
+import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { humanize, statusTone } from "@/lib/format";
 import { ResourceTable, type Column } from "./ResourceTable";
-import type { CampaignRead } from "@/types";
+import { CAMPAIGN_STATUSES } from "./formOptions";
+import type { CampaignRead, CampaignStatus } from "@/types";
 
 export function CampaignsTab({ projectId }: { projectId: string }) {
   const query = useCampaigns(projectId);
+  const update = useUpdateCampaign(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator");
+  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<CampaignRead>[] = [
     { header: "Name", render: (c) => <span className="font-medium text-slate-100">{c.name}</span> },
     { header: "Status", render: (c) => <Badge tone={statusTone(c.status)}>{humanize(c.status)}</Badge> },
     { header: "Steps", render: (c) => String(c.steps.length) },
     { header: "Objective", render: (c) => <span className="text-slate-400">{c.objective}</span> },
+    {
+      header: "Status update",
+      render: (c) =>
+        canUpdate ? (
+          <Select
+            aria-label="Campaign status"
+            disabled={update.isPending}
+            value={c.status}
+            onChange={(e) =>
+              update.mutate({
+                campaignId: c.campaign_id,
+                body: { status: e.target.value as CampaignStatus },
+              })
+            }
+          >
+            {CAMPAIGN_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          "-"
+        ),
+    },
   ];
 
   return (
@@ -28,6 +56,7 @@ export function CampaignsTab({ projectId }: { projectId: string }) {
         rowKey={(c) => c.campaign_id}
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add campaign</Button> : undefined}
       />
+      {update.error && <ErrorState error={update.error} />}
       <CreateCampaignModal projectId={projectId} open={open} onClose={() => setOpen(false)} />
     </>
   );

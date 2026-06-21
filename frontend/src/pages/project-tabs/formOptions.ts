@@ -3,6 +3,7 @@ import type {
   ActionType,
   ApprovalEntityType,
   ApprovalRiskLevel,
+  CampaignStatus,
   DetectionStatus,
   DetectionGapStatus,
   DetectionGapType,
@@ -44,6 +45,15 @@ export const ACTION_TYPES: ActionType[] = [
 ];
 
 export const ACTION_RESULTS: ActionResult[] = ["unknown", "planned", "approved", "executed", "skipped", "failed"];
+
+export const CAMPAIGN_STATUSES: CampaignStatus[] = [
+  "draft",
+  "planned",
+  "approved",
+  "active",
+  "completed",
+  "cancelled",
+];
 
 export const DETECTION_STATUSES: DetectionStatus[] = [
   "unknown",
