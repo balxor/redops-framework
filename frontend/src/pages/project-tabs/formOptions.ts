@@ -12,6 +12,7 @@ import type {
   LlmTaskType,
   ProjectRole,
   ReportFormat,
+  ReportStatus,
   ScopeStatus,
   TargetType,
   TelemetryDetectionStatus,
@@ -74,6 +75,15 @@ export const FINDING_STATUSES: FindingStatus[] = [
 ];
 
 export const REPORT_FORMATS: ReportFormat[] = ["markdown", "html", "pdf"];
+
+export const REPORT_STATUSES: ReportStatus[] = [
+  "draft",
+  "generated",
+  "under_review",
+  "approved",
+  "final",
+  "archived",
+];
 
 export const PROJECT_ROLES: ProjectRole[] = ["lead_operator", "operator", "reviewer", "client_viewer"];
 

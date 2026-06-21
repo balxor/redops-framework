@@ -39,6 +39,7 @@ import type {
   ProjectUpdate,
   ReportCreate,
   ReportGenerateRequest,
+  ReportUpdate,
   ScopeCreate,
   TelemetryCreate,
   TelemetryUpdate,
@@ -338,6 +339,18 @@ export function useGenerateReport(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: ReportGenerateRequest) => reportsApi.generate(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.reports(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useUpdateReport(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ reportId, body }: { reportId: string; body: ReportUpdate }) =>
+      reportsApi.update(projectId, reportId, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: keys.reports(projectId) });
       qc.invalidateQueries({ queryKey: keys.audit(projectId) });

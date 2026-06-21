@@ -1,19 +1,21 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useCreateReport, useEvidence, useFindings, useGenerateReport, useReports } from "@/hooks/queries";
+import { useCreateReport, useEvidence, useFindings, useGenerateReport, useReports, useUpdateReport } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { humanize, statusTone } from "@/lib/format";
 import { ResourceTable, type Column } from "./ResourceTable";
-import { optionLabel, REPORT_FORMATS } from "./formOptions";
-import type { ReportFormat, ReportRead } from "@/types";
+import { optionLabel, REPORT_FORMATS, REPORT_STATUSES } from "./formOptions";
+import type { ReportFormat, ReportRead, ReportStatus } from "@/types";
 
 export function ReportsTab({ projectId }: { projectId: string }) {
   const query = useReports(projectId);
   const findings = useFindings(projectId);
   const evidence = useEvidence(projectId);
+  const update = useUpdateReport(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canReview = hasRole("admin", "lead_operator", "reviewer");
   const [open, setOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
   const columns: Column<ReportRead>[] = [
@@ -21,6 +23,31 @@ export function ReportsTab({ projectId }: { projectId: string }) {
     { header: "Version", render: (r) => r.version },
     { header: "Status", render: (r) => <Badge tone={statusTone(r.status)}>{humanize(r.status)}</Badge> },
     { header: "Format", render: (r) => humanize(r.format) },
+    {
+      header: "Status update",
+      render: (r) =>
+        canReview ? (
+          <Select
+            aria-label="Report status"
+            disabled={update.isPending}
+            value={r.status}
+            onChange={(e) =>
+              update.mutate({
+                reportId: r.report_id,
+                body: { status: e.target.value as ReportStatus },
+              })
+            }
+          >
+            {REPORT_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          "-"
+        ),
+    },
   ];
 
   return (
