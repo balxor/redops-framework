@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.scope import ScopeCreate, ScopeRead, ScopeUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
 from app.services.store import store
 
@@ -29,7 +30,17 @@ def create_scope(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> ScopeRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
-    return store.create_scope(db, project_id, payload)
+    scope = store.create_scope(db, project_id, payload)
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="scope.created",
+        resource_type="scope",
+        resource_id=scope.scope_id,
+        summary=f"Scope created with status {scope.status}",
+    )
+    return scope
 
 
 @router.get("/{scope_id}", response_model=ScopeRead)
@@ -58,5 +69,13 @@ def update_scope(
     scope = store.update_scope(db, project_id, scope_id, payload)
     if scope is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scope not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="scope.updated",
+        resource_type="scope",
+        resource_id=scope_id,
+        summary=f"Scope updated with status {scope.status}",
+    )
     return scope
-

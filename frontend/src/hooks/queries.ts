@@ -5,24 +5,42 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   actionsApi,
   assetsApi,
+  approvalsApi,
+  auditApi,
   attackApi,
   campaignsApi,
+  detectionGapsApi,
   evidenceApi,
   findingsApi,
+  llmTasksApi,
   membersApi,
   projectsApi,
   reportsApi,
   safetyApi,
   scopesApi,
+  telemetryApi,
   usersApi,
 } from "@/api/resources";
 import type {
   AssetCreate,
+  ActionCreate,
+  ApprovalCreate,
+  ApprovalDecision,
+  CampaignCreate,
+  DetectionGapCreate,
+  DetectionGapUpdate,
+  EvidenceCreate,
   FindingCreate,
+  LlmTaskCreate,
+  LlmTaskReview,
   ProjectCreate,
   ProjectMemberCreate,
   ProjectUpdate,
+  ReportCreate,
+  ReportGenerateRequest,
   ScopeCreate,
+  TelemetryCreate,
+  TelemetryUpdate,
   UserCreate,
 } from "@/types";
 
@@ -38,6 +56,11 @@ export const keys = {
   reports: (id: string) => ["projects", id, "reports"] as const,
   members: (id: string) => ["projects", id, "members"] as const,
   safety: (id: string) => ["projects", id, "safety"] as const,
+  approvals: (id: string) => ["projects", id, "approvals"] as const,
+  audit: (id: string) => ["projects", id, "audit"] as const,
+  llmTasks: (id: string) => ["projects", id, "llmTasks"] as const,
+  telemetry: (id: string) => ["projects", id, "telemetry"] as const,
+  detectionGaps: (id: string) => ["projects", id, "detectionGaps"] as const,
   users: ["users"] as const,
   attack: ["attack", "techniques"] as const,
 };
@@ -106,6 +129,21 @@ export const useMembers = (projectId: string) =>
 export const useSafetySummary = (projectId: string) =>
   useQuery({ queryKey: keys.safety(projectId), queryFn: () => safetyApi.summary(projectId) });
 
+export const useApprovals = (projectId: string) =>
+  useQuery({ queryKey: keys.approvals(projectId), queryFn: () => approvalsApi.list(projectId) });
+
+export const useAuditLogs = (projectId: string) =>
+  useQuery({ queryKey: keys.audit(projectId), queryFn: () => auditApi.list(projectId) });
+
+export const useLlmTasks = (projectId: string) =>
+  useQuery({ queryKey: keys.llmTasks(projectId), queryFn: () => llmTasksApi.list(projectId) });
+
+export const useTelemetry = (projectId: string) =>
+  useQuery({ queryKey: keys.telemetry(projectId), queryFn: () => telemetryApi.list(projectId) });
+
+export const useDetectionGaps = (projectId: string) =>
+  useQuery({ queryKey: keys.detectionGaps(projectId), queryFn: () => detectionGapsApi.list(projectId) });
+
 // --- Sub-resources (mutate) ------------------------------------------------
 
 export function useCreateScope(projectId: string) {
@@ -127,11 +165,170 @@ export function useCreateAsset(projectId: string) {
   });
 }
 
+export function useCreateCampaign(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: CampaignCreate) => campaignsApi.create(projectId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.campaigns(projectId) }),
+  });
+}
+
+export function useCreateAction(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ActionCreate) => actionsApi.create(projectId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.actions(projectId) }),
+  });
+}
+
+export function useCreateApproval(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ApprovalCreate) => approvalsApi.create(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.approvals(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useApproveApproval(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ approvalId, body }: { approvalId: string; body: ApprovalDecision }) =>
+      approvalsApi.approve(projectId, approvalId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.approvals(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useRejectApproval(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ approvalId, body }: { approvalId: string; body: ApprovalDecision }) =>
+      approvalsApi.reject(projectId, approvalId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.approvals(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useCreateLlmTask(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: LlmTaskCreate) => llmTasksApi.create(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.llmTasks(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useAcceptLlmTask(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ taskId, body }: { taskId: string; body: LlmTaskReview }) =>
+      llmTasksApi.accept(projectId, taskId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.llmTasks(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useRejectLlmTask(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ taskId, body }: { taskId: string; body: LlmTaskReview }) =>
+      llmTasksApi.reject(projectId, taskId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.llmTasks(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useCreateTelemetry(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: TelemetryCreate) => telemetryApi.create(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.telemetry(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useUpdateTelemetry(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ telemetryId, body }: { telemetryId: string; body: TelemetryUpdate }) =>
+      telemetryApi.update(projectId, telemetryId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.telemetry(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useCreateDetectionGap(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: DetectionGapCreate) => detectionGapsApi.create(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.detectionGaps(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useUpdateDetectionGap(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ gapId, body }: { gapId: string; body: DetectionGapUpdate }) =>
+      detectionGapsApi.update(projectId, gapId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.detectionGaps(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
+export function useCreateEvidence(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: EvidenceCreate) => evidenceApi.create(projectId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.evidence(projectId) }),
+  });
+}
+
 export function useCreateFinding(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: FindingCreate) => findingsApi.create(projectId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.findings(projectId) }),
+  });
+}
+
+export function useCreateReport(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ReportCreate) => reportsApi.create(projectId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.reports(projectId) }),
+  });
+}
+
+export function useGenerateReport(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ReportGenerateRequest) => reportsApi.generate(projectId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.reports(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
   });
 }
 

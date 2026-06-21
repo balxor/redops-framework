@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
 from app.core.database import Base
-from app.models import asset, campaign, project, scope  # noqa: F401
+from app.models import action, approval, asset, audit, campaign, detection_gap, evidence, finding, llm_task, membership, project, report, scope, telemetry, user  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
@@ -46,4 +46,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-

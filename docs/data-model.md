@@ -977,14 +977,15 @@ telemetry_id
 project_id
 campaign_id
 campaign_step_id
+action_id
 finding_id
 asset_id
+evidence_id
 attack_technique_id
 expected_telemetry
 observed_telemetry
 data_source
 detection_status
-evidence_id
 review_note
 reviewed_by
 reviewed_at
@@ -1010,15 +1011,23 @@ telemetry:
   telemetry_id: telemetry-001
   project_id: project-001
   campaign_step_id: step-001
+  action_id: action-001
   asset_id: asset-001
+  evidence_id: evidence-001
   attack_technique_id: T1057
   expected_telemetry:
-    - process_creation
-    - command_execution
+    - name: process_creation
+      data_source: edr
+      data_component: Process Creation
+      signal: Process discovery activity should create endpoint process telemetry.
+      required: true
   observed_telemetry:
-    - process_creation
+    - name: process_creation
+      data_source: edr
+      data_component: Process Creation
+      signal: Sanitized endpoint event linked to evidence.
+      required: false
   detection_status: partially_detected
-  evidence_id: evidence-001
 ```
 
 ---
@@ -1032,16 +1041,20 @@ Fields:
 ```text
 gap_id
 project_id
+telemetry_id
 campaign_step_id
 finding_id
+evidence_id
+asset_id
 attack_technique_id
 gap_type
 summary
 impact
 recommendation
-evidence_id
+status
 created_by
 created_at
+updated_at
 ```
 
 Detection gap type values:
@@ -1063,10 +1076,14 @@ Example:
 detection_gap:
   gap_id: gap-001
   project_id: project-001
+  telemetry_id: telemetry-001
   campaign_step_id: step-001
+  evidence_id: evidence-001
+  asset_id: asset-001
   attack_technique_id: T1057
   gap_type: incomplete_telemetry
   summary: Process creation was observed, but command execution context was unavailable.
+  status: open
 ```
 
 ---
@@ -1145,16 +1162,14 @@ The audit log model stores important project activity.
 Fields:
 
 ```text
-audit_id
-actor_id
+audit_log_id
 project_id
-entity_type
-entity_id
+actor_user_id
 action
-old_value
-new_value
-ip_address
-user_agent
+resource_type
+resource_id
+summary
+detail
 created_at
 ```
 
@@ -1213,9 +1228,10 @@ task_type
 entity_type
 entity_id
 requested_by
-model_provider
-input_hash
-output_hash
+input_summary
+output_content
+assumptions
+limitations
 status
 reviewed_by
 reviewed_at
@@ -1403,7 +1419,8 @@ telemetry.detection_status
 approvals.project_id
 approvals.entity_type
 audit_logs.project_id
-audit_logs.actor_id
+audit_logs.actor_user_id
+audit_logs.action
 audit_logs.created_at
 ```
 

@@ -3,18 +3,22 @@ from fastapi import Depends
 
 from app.api.v1.routes import (
     actions,
+    approvals,
     assets,
+    audit,
     attack,
     auth,
     campaigns,
     evidence,
     findings,
     health,
+    llm_tasks,
     members,
     projects,
     reports,
     safety,
     scopes,
+    telemetry,
     users,
 )
 from app.core.rbac import require_roles
@@ -53,6 +57,12 @@ api_router.include_router(
     dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
 )
 api_router.include_router(
+    approvals.router,
+    prefix="/projects/{project_id}/approvals",
+    tags=["approvals"],
+    dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
+)
+api_router.include_router(
     assets.router,
     prefix="/projects/{project_id}/assets",
     tags=["assets"],
@@ -86,6 +96,24 @@ api_router.include_router(
     reports.router,
     prefix="/projects/{project_id}/reports",
     tags=["reports"],
+    dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
+)
+api_router.include_router(
+    audit.router,
+    prefix="/projects/{project_id}/audit",
+    tags=["audit"],
+    dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
+)
+api_router.include_router(
+    llm_tasks.router,
+    prefix="/projects/{project_id}/llm",
+    tags=["llm"],
+    dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
+)
+api_router.include_router(
+    telemetry.router,
+    prefix="/projects/{project_id}",
+    tags=["telemetry"],
     dependencies=[Depends(require_roles("admin", "lead_operator", "operator", "reviewer"))],
 )
 api_router.include_router(attack.router, prefix="/attack", tags=["attack"])

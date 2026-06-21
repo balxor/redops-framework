@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.campaign import CampaignCreate, CampaignRead, CampaignUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
 from app.services.safety import validate_campaign_create, validate_campaign_update
 from app.services.store import store
@@ -31,7 +32,17 @@ def create_campaign(
 ) -> CampaignRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
     validate_campaign_create(db, project_id, payload)
-    return store.create_campaign(db, project_id, payload)
+    campaign = store.create_campaign(db, project_id, payload)
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="campaign.created",
+        resource_type="campaign",
+        resource_id=campaign.campaign_id,
+        summary=f"Campaign created: {campaign.name}",
+    )
+    return campaign
 
 
 @router.get("/{campaign_id}", response_model=CampaignRead)
@@ -57,8 +68,17 @@ def update_campaign(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> CampaignRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
-    validate_campaign_update(db, project_id, payload)
+    validate_campaign_update(db, project_id, campaign_id, payload)
     campaign = store.update_campaign(db, project_id, campaign_id, payload)
     if campaign is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="campaign.updated",
+        resource_type="campaign",
+        resource_id=campaign_id,
+        summary=f"Campaign updated: {campaign.name}",
+    )
     return campaign

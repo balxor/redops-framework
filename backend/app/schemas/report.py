@@ -35,6 +35,12 @@ class ReportCreate(ReportBase):
     pass
 
 
+class ReportGenerateRequest(BaseModel):
+    title: str = Field(default="Project Report Outline", min_length=3, max_length=300)
+    format: ReportFormat = "markdown"
+    include_sections: list[str] = Field(default_factory=list)
+
+
 class ReportUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=3, max_length=300)
     version: str | None = Field(default=None, min_length=1, max_length=40)
@@ -59,4 +65,3 @@ class ReportRead(ReportBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-

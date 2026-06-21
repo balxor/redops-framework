@@ -464,6 +464,12 @@ export interface ReportCreate {
   metadata?: Metadata;
 }
 
+export interface ReportGenerateRequest {
+  title?: string;
+  format?: ReportFormat;
+  include_sections?: string[];
+}
+
 export type ReportUpdate = Partial<ReportCreate>;
 
 // ---------------------------------------------------------------------------
@@ -492,6 +498,205 @@ export interface SafetySummary {
   has_approved_scope: boolean;
   restricted_actions: string[];
 }
+
+export interface AuditLogRead {
+  audit_log_id: string;
+  project_id: string;
+  actor_user_id: string;
+  action: string;
+  resource_type: string;
+  resource_id: string | null;
+  summary: string;
+  detail: Metadata;
+  created_at: string;
+}
+
+export type ApprovalStatus = "pending" | "approved" | "rejected" | "revoked" | "expired";
+export type ApprovalRiskLevel = "standard" | "controlled" | "sensitive" | "high_risk";
+export type ApprovalEntityType = "campaign" | "action_type" | "scope" | "policy_exception";
+
+export interface ApprovalRead {
+  approval_id: string;
+  project_id: string;
+  entity_type: ApprovalEntityType;
+  entity_id: string;
+  status: ApprovalStatus;
+  risk_level: ApprovalRiskLevel;
+  reason: string;
+  conditions: Metadata;
+  requested_by: string;
+  decided_by: string | null;
+  decision_note: string | null;
+  requested_at: string;
+  decided_at: string | null;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApprovalCreate {
+  entity_type: ApprovalEntityType;
+  entity_id: string;
+  risk_level?: ApprovalRiskLevel;
+  reason: string;
+  conditions?: Metadata;
+  expires_at?: string | null;
+}
+
+export interface ApprovalDecision {
+  decision_note?: string | null;
+}
+
+export type LlmTaskType =
+  | "scope_summary"
+  | "attack_mapping_suggestion"
+  | "campaign_plan_draft"
+  | "policy_review"
+  | "evidence_summary"
+  | "finding_draft"
+  | "remediation_draft"
+  | "report_draft"
+  | "telemetry_gap_analysis"
+  | "cleanup_checklist"
+  | "terminology_review";
+export type LlmTaskStatus = "under_review" | "accepted" | "rejected" | "archived";
+
+export interface LlmTaskRead {
+  llm_task_id: string;
+  project_id: string;
+  task_type: LlmTaskType;
+  entity_type: string | null;
+  entity_id: string | null;
+  status: LlmTaskStatus;
+  input_summary: string;
+  output_content: string;
+  assumptions: string[];
+  limitations: string[];
+  requires_review: boolean;
+  requested_by: string;
+  reviewed_by: string | null;
+  review_note: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LlmTaskCreate {
+  task_type: LlmTaskType;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  input_summary: string;
+  output_content: string;
+  assumptions?: string[];
+  limitations?: string[];
+  requires_review?: boolean;
+}
+
+export interface LlmTaskReview {
+  review_note?: string | null;
+}
+
+export type TelemetryDetectionStatus =
+  | "unknown"
+  | "detected"
+  | "not_detected"
+  | "blocked"
+  | "partially_detected"
+  | "not_applicable";
+export type DetectionGapType =
+  | "missing_telemetry"
+  | "incomplete_telemetry"
+  | "delayed_telemetry"
+  | "low_confidence_signal"
+  | "missing_data_source"
+  | "missing_detection_rule"
+  | "blocked_before_detection"
+  | "not_reviewed";
+export type DetectionGapStatus = "open" | "under_review" | "accepted" | "resolved" | "closed";
+
+export interface TelemetrySignal {
+  name: string;
+  description?: string | null;
+  data_source?: string | null;
+  data_component?: string | null;
+  signal?: string | null;
+  required: boolean;
+}
+
+export interface TelemetryRead {
+  telemetry_id: string;
+  project_id: string;
+  campaign_id: string | null;
+  campaign_step_id: string | null;
+  action_id: string | null;
+  finding_id: string | null;
+  asset_id: string | null;
+  evidence_id: string | null;
+  attack_technique_id: string | null;
+  expected_telemetry: TelemetrySignal[];
+  observed_telemetry: TelemetrySignal[];
+  data_source: string | null;
+  detection_status: TelemetryDetectionStatus;
+  review_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TelemetryCreate {
+  campaign_id?: string | null;
+  campaign_step_id?: string | null;
+  action_id?: string | null;
+  finding_id?: string | null;
+  asset_id?: string | null;
+  evidence_id?: string | null;
+  attack_technique_id?: string | null;
+  expected_telemetry?: TelemetrySignal[];
+  observed_telemetry?: TelemetrySignal[];
+  data_source?: string | null;
+  detection_status?: TelemetryDetectionStatus;
+  review_note?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+}
+
+export type TelemetryUpdate = Partial<TelemetryCreate>;
+
+export interface DetectionGapRead {
+  gap_id: string;
+  project_id: string;
+  telemetry_id: string | null;
+  campaign_step_id: string | null;
+  finding_id: string | null;
+  evidence_id: string | null;
+  asset_id: string | null;
+  attack_technique_id: string | null;
+  gap_type: DetectionGapType;
+  summary: string;
+  impact: string | null;
+  recommendation: string | null;
+  status: DetectionGapStatus;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DetectionGapCreate {
+  telemetry_id?: string | null;
+  campaign_step_id?: string | null;
+  finding_id?: string | null;
+  evidence_id?: string | null;
+  asset_id?: string | null;
+  attack_technique_id?: string | null;
+  gap_type: DetectionGapType;
+  summary: string;
+  impact?: string | null;
+  recommendation?: string | null;
+  status?: DetectionGapStatus;
+}
+
+export type DetectionGapUpdate = Partial<DetectionGapCreate>;
 
 export interface AttackTechnique {
   technique_id: string;

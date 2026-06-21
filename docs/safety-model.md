@@ -280,6 +280,20 @@ approved_at
 expires_at
 ```
 
+Current implementation supports project-scoped approval requests for:
+
+```text
+campaign
+action_type
+scope
+policy_exception
+```
+
+Restricted action categories from approved scope are enforced for matching
+action log types. For example, `exploit_validation` requires an approved
+`action_type` approval for `exploit_validation_note` before that action can be
+recorded.
+
 Approval rules:
 
 1. The requester and approver should be different users when possible.

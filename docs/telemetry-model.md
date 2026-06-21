@@ -82,14 +82,15 @@ telemetry_id
 project_id
 campaign_id
 campaign_step_id
+action_id
 finding_id
 asset_id
+evidence_id
 attack_technique_id
 expected_telemetry
 observed_telemetry
 data_source
 detection_status
-evidence_id
 review_note
 reviewed_by
 reviewed_at
@@ -133,9 +134,7 @@ name
 description
 data_source
 data_component
-attack_technique_id
-expected_signal
-expected_time_window
+signal
 required
 ```
 
@@ -146,9 +145,7 @@ expected_telemetry:
   - name: process creation event
     data_source: endpoint
     data_component: Process Creation
-    attack_technique_id: T1057
-    expected_signal: process execution related to process discovery
-    expected_time_window: 15m
+    signal: process execution related to process discovery
     required: true
 ```
 
@@ -173,13 +170,8 @@ name
 description
 data_source
 data_component
-event_time
-event_id
-alert_id
-log_reference
-evidence_id
-confidence
-review_note
+signal
+required
 ```
 
 Example:
@@ -189,10 +181,8 @@ observed_telemetry:
   - name: endpoint process creation
     data_source: edr
     data_component: Process Creation
-    event_time: 2026-06-20T14:05:00Z
-    evidence_id: evidence-001
-    confidence: high
-    review_note: event matched the expected process creation signal
+    signal: event matched the expected process creation signal
+    required: false
 ```
 
 Confidence values:
@@ -611,25 +601,15 @@ Initial telemetry endpoints:
 ```http
 GET    /api/v1/projects/{project_id}/telemetry
 POST   /api/v1/projects/{project_id}/telemetry
-GET    /api/v1/telemetry/{telemetry_id}
-PATCH  /api/v1/telemetry/{telemetry_id}
-DELETE /api/v1/telemetry/{telemetry_id}
-```
-
-Campaign step telemetry endpoints:
-
-```http
-GET  /api/v1/campaign-steps/{step_id}/telemetry
-POST /api/v1/campaign-steps/{step_id}/telemetry
+PATCH  /api/v1/projects/{project_id}/telemetry/{telemetry_id}
 ```
 
 Detection gap endpoints:
 
 ```http
-GET  /api/v1/projects/{project_id}/detection-gaps
-POST /api/v1/projects/{project_id}/detection-gaps
-GET  /api/v1/detection-gaps/{gap_id}
-PATCH /api/v1/detection-gaps/{gap_id}
+GET    /api/v1/projects/{project_id}/detection-gaps
+POST   /api/v1/projects/{project_id}/detection-gaps
+PATCH  /api/v1/projects/{project_id}/detection-gaps/{gap_id}
 ```
 
 ---

@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.membership import ProjectMemberCreate, ProjectMemberRead, ProjectMemberUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import (
     PROJECT_WRITE_ROLES,
     create_project_member,
@@ -35,7 +36,17 @@ def post_member(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> ProjectMemberRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES)
-    return create_project_member(db, project_id, payload)
+    member = create_project_member(db, project_id, payload)
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="member.created",
+        resource_type="project_member",
+        resource_id=member.project_member_id,
+        summary=f"Project member added: {member.user_id}",
+    )
+    return member
 
 
 @router.patch("/{project_member_id}", response_model=ProjectMemberRead)
@@ -50,6 +61,15 @@ def patch_member(
     member = update_project_member(db, project_id, project_member_id, payload)
     if member is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project member not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="member.updated",
+        resource_type="project_member",
+        resource_id=project_member_id,
+        summary=f"Project member updated: {member.user_id}",
+    )
     return member
 
 
@@ -64,4 +84,12 @@ def delete_member(
     deleted = delete_project_member(db, project_id, project_member_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project member not found")
-
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="member.deleted",
+        resource_type="project_member",
+        resource_id=project_member_id,
+        summary="Project member removed",
+    )

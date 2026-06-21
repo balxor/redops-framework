@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
 from app.services.safety import validate_asset_create, validate_asset_update
 from app.services.store import store
@@ -31,7 +32,17 @@ def create_asset(
 ) -> AssetRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES | {"operator"})
     validate_asset_create(db, project_id, payload)
-    return store.create_asset(db, project_id, payload)
+    asset = store.create_asset(db, project_id, payload)
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="asset.created",
+        resource_type="asset",
+        resource_id=asset.asset_id,
+        summary=f"Asset created: {asset.value}",
+    )
+    return asset
 
 
 @router.get("/{asset_id}", response_model=AssetRead)
@@ -61,6 +72,15 @@ def update_asset(
     asset = store.update_asset(db, project_id, asset_id, payload)
     if asset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="asset.updated",
+        resource_type="asset",
+        resource_id=asset_id,
+        summary=f"Asset updated: {asset.value}",
+    )
     return asset
 
 
@@ -75,3 +95,12 @@ def delete_asset(
     deleted = store.delete_asset(db, project_id, asset_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="asset.deleted",
+        resource_type="asset",
+        resource_id=asset_id,
+        summary="Asset deleted",
+    )

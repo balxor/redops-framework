@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -195,9 +196,10 @@ class DatabaseStore:
         operator_id: str,
         payload: ActionCreate,
     ) -> ActionRead:
+        self._validate_action_references(db, project_id, payload.model_dump(mode="json"))
         now = utc_now()
         action = Action(
-            **payload.model_dump(mode="json", exclude={"metadata"}),
+            **payload.model_dump(exclude={"metadata"}),
             action_id=new_id("action"),
             project_id=project_id,
             operator_id=operator_id,
@@ -226,7 +228,8 @@ class DatabaseStore:
         action = db.get(Action, action_id)
         if action is None or action.project_id != project_id:
             return None
-        self._apply_update(action, payload.model_dump(mode="json", exclude_unset=True))
+        self._validate_action_references(db, project_id, payload.model_dump(mode="json", exclude_unset=True))
+        self._apply_update(action, payload.model_dump(exclude_unset=True))
         action.updated_at = utc_now()
         db.commit()
         db.refresh(action)
@@ -243,9 +246,10 @@ class DatabaseStore:
         uploaded_by: str,
         payload: EvidenceCreate,
     ) -> EvidenceRead:
+        self._validate_evidence_references(db, project_id, payload.model_dump(mode="json"))
         now = utc_now()
         evidence = Evidence(
-            **payload.model_dump(mode="json", exclude={"metadata"}),
+            **payload.model_dump(exclude={"metadata"}),
             evidence_id=new_id("evidence"),
             project_id=project_id,
             uploaded_by=uploaded_by,
@@ -275,7 +279,8 @@ class DatabaseStore:
         evidence = db.get(Evidence, evidence_id)
         if evidence is None or evidence.project_id != project_id:
             return None
-        self._apply_update(evidence, payload.model_dump(mode="json", exclude_unset=True))
+        self._validate_evidence_references(db, project_id, payload.model_dump(mode="json", exclude_unset=True))
+        self._apply_update(evidence, payload.model_dump(exclude_unset=True))
         evidence.updated_at = utc_now()
         db.commit()
         db.refresh(evidence)
@@ -292,6 +297,7 @@ class DatabaseStore:
         created_by: str,
         payload: FindingCreate,
     ) -> FindingRead:
+        self._validate_finding_references(db, project_id, payload.model_dump(mode="json"))
         now = utc_now()
         finding = Finding(
             **payload.model_dump(mode="json", exclude={"metadata"}),
@@ -323,6 +329,7 @@ class DatabaseStore:
         finding = db.get(Finding, finding_id)
         if finding is None or finding.project_id != project_id:
             return None
+        self._validate_finding_references(db, project_id, payload.model_dump(mode="json", exclude_unset=True))
         self._apply_update(finding, payload.model_dump(mode="json", exclude_unset=True))
         finding.updated_at = utc_now()
         db.commit()
@@ -339,9 +346,10 @@ class DatabaseStore:
         project_id: str,
         payload: ReportCreate,
     ) -> ReportRead:
+        self._validate_report_references(db, project_id, payload.model_dump(mode="json"))
         now = utc_now()
         report = Report(
-            **payload.model_dump(mode="json", exclude={"metadata"}),
+            **payload.model_dump(exclude={"metadata"}),
             report_id=new_id("report"),
             project_id=project_id,
             metadata_=payload.metadata,
@@ -369,7 +377,8 @@ class DatabaseStore:
         report = db.get(Report, report_id)
         if report is None or report.project_id != project_id:
             return None
-        self._apply_update(report, payload.model_dump(mode="json", exclude_unset=True))
+        self._validate_report_references(db, project_id, payload.model_dump(mode="json", exclude_unset=True))
+        self._apply_update(report, payload.model_dump(exclude_unset=True))
         report.updated_at = utc_now()
         db.commit()
         db.refresh(report)
@@ -380,6 +389,53 @@ class DatabaseStore:
             data["metadata_"] = data.pop("metadata")
         for key, value in data.items():
             setattr(model, key, value)
+
+    def _validate_action_references(self, db: Session, project_id: str, data: dict) -> None:
+        self._ensure_project_ref(db, Campaign, data.get("campaign_id"), project_id, "Campaign")
+        self._ensure_project_ref(db, Asset, data.get("asset_id"), project_id, "Asset")
+
+    def _validate_evidence_references(self, db: Session, project_id: str, data: dict) -> None:
+        self._ensure_project_ref(db, Action, data.get("action_id"), project_id, "Action")
+        self._ensure_project_ref(db, Asset, data.get("asset_id"), project_id, "Asset")
+        self._ensure_project_ref(db, Finding, data.get("finding_id"), project_id, "Finding")
+
+    def _validate_finding_references(self, db: Session, project_id: str, data: dict) -> None:
+        self._ensure_project_refs(db, Asset, data.get("affected_assets"), project_id, "Asset")
+        self._ensure_project_refs(db, Evidence, data.get("evidence_ids"), project_id, "Evidence")
+
+    def _validate_report_references(self, db: Session, project_id: str, data: dict) -> None:
+        self._ensure_project_refs(db, Finding, data.get("finding_ids"), project_id, "Finding")
+        self._ensure_project_refs(db, Evidence, data.get("evidence_ids"), project_id, "Evidence")
+
+    def _ensure_project_refs(
+        self,
+        db: Session,
+        model: type,
+        ids: list[str] | None,
+        project_id: str,
+        label: str,
+    ) -> None:
+        if ids is None:
+            return
+        for entity_id in ids:
+            self._ensure_project_ref(db, model, entity_id, project_id, label)
+
+    def _ensure_project_ref(
+        self,
+        db: Session,
+        model: type,
+        entity_id: str | None,
+        project_id: str,
+        label: str,
+    ) -> None:
+        if entity_id is None:
+            return
+        entity = db.get(model, entity_id)
+        if entity is None or getattr(entity, "project_id", None) != project_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{label} reference is invalid for this project",
+            )
 
     def _project_read(self, project: Project) -> ProjectRead:
         return ProjectRead(

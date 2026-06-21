@@ -1,19 +1,26 @@
 // Typed wrappers around every RedOps API endpoint, grouped by resource.
-// See docs/API_MAPPING.md for the full endpoint -> function table.
+// See docs/api.md for the endpoint model.
 
 import { api } from "@/lib/apiClient";
 import type {
   ActionCreate,
   ActionRead,
   ActionUpdate,
+  ApprovalCreate,
+  ApprovalDecision,
+  ApprovalRead,
   AssetCreate,
   AssetRead,
   AssetUpdate,
+  AuditLogRead,
   AttackTechnique,
   CampaignCreate,
   CampaignRead,
   CampaignUpdate,
   CurrentUser,
+  DetectionGapCreate,
+  DetectionGapRead,
+  DetectionGapUpdate,
   EvidenceCreate,
   EvidenceRead,
   EvidenceUpdate,
@@ -21,18 +28,25 @@ import type {
   FindingRead,
   FindingUpdate,
   HealthStatus,
+  LlmTaskCreate,
+  LlmTaskRead,
+  LlmTaskReview,
   ProjectCreate,
   ProjectMemberCreate,
   ProjectMemberRead,
   ProjectRead,
   ProjectUpdate,
   ReportCreate,
+  ReportGenerateRequest,
   ReportRead,
   ReportUpdate,
   SafetySummary,
   ScopeCreate,
   ScopeRead,
   ScopeUpdate,
+  TelemetryCreate,
+  TelemetryRead,
+  TelemetryUpdate,
   TokenResponse,
   UserCreate,
   UserRead,
@@ -121,6 +135,8 @@ export const reportsApi = {
   list: (projectId: string) => api.get<ReportRead[]>(`${p(projectId)}/reports`),
   create: (projectId: string, body: ReportCreate) =>
     api.post<ReportRead>(`${p(projectId)}/reports`, body),
+  generate: (projectId: string, body: ReportGenerateRequest) =>
+    api.post<ReportRead>(`${p(projectId)}/reports/generate`, body),
   update: (projectId: string, reportId: string, body: ReportUpdate) =>
     api.patch<ReportRead>(`${p(projectId)}/reports/${reportId}`, body),
 };
@@ -135,6 +151,48 @@ export const membersApi = {
 
 export const safetyApi = {
   summary: (projectId: string) => api.get<SafetySummary>(`${p(projectId)}/safety/summary`),
+};
+
+export const approvalsApi = {
+  list: (projectId: string) => api.get<ApprovalRead[]>(`${p(projectId)}/approvals`),
+  create: (projectId: string, body: ApprovalCreate) =>
+    api.post<ApprovalRead>(`${p(projectId)}/approvals`, body),
+  approve: (projectId: string, approvalId: string, body: ApprovalDecision) =>
+    api.post<ApprovalRead>(`${p(projectId)}/approvals/${approvalId}/approve`, body),
+  reject: (projectId: string, approvalId: string, body: ApprovalDecision) =>
+    api.post<ApprovalRead>(`${p(projectId)}/approvals/${approvalId}/reject`, body),
+  revoke: (projectId: string, approvalId: string, body: ApprovalDecision) =>
+    api.post<ApprovalRead>(`${p(projectId)}/approvals/${approvalId}/revoke`, body),
+};
+
+export const auditApi = {
+  list: (projectId: string) => api.get<AuditLogRead[]>(`${p(projectId)}/audit`),
+};
+
+export const llmTasksApi = {
+  list: (projectId: string) => api.get<LlmTaskRead[]>(`${p(projectId)}/llm/tasks`),
+  create: (projectId: string, body: LlmTaskCreate) =>
+    api.post<LlmTaskRead>(`${p(projectId)}/llm/tasks`, body),
+  accept: (projectId: string, taskId: string, body: LlmTaskReview) =>
+    api.post<LlmTaskRead>(`${p(projectId)}/llm/tasks/${taskId}/accept`, body),
+  reject: (projectId: string, taskId: string, body: LlmTaskReview) =>
+    api.post<LlmTaskRead>(`${p(projectId)}/llm/tasks/${taskId}/reject`, body),
+};
+
+export const telemetryApi = {
+  list: (projectId: string) => api.get<TelemetryRead[]>(`${p(projectId)}/telemetry`),
+  create: (projectId: string, body: TelemetryCreate) =>
+    api.post<TelemetryRead>(`${p(projectId)}/telemetry`, body),
+  update: (projectId: string, telemetryId: string, body: TelemetryUpdate) =>
+    api.patch<TelemetryRead>(`${p(projectId)}/telemetry/${telemetryId}`, body),
+};
+
+export const detectionGapsApi = {
+  list: (projectId: string) => api.get<DetectionGapRead[]>(`${p(projectId)}/detection-gaps`),
+  create: (projectId: string, body: DetectionGapCreate) =>
+    api.post<DetectionGapRead>(`${p(projectId)}/detection-gaps`, body),
+  update: (projectId: string, gapId: string, body: DetectionGapUpdate) =>
+    api.patch<DetectionGapRead>(`${p(projectId)}/detection-gaps/${gapId}`, body),
 };
 
 export const attackApi = {

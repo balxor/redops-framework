@@ -839,6 +839,9 @@ PATCH /api/v1/reports/{report_id}
 }
 ```
 
+The current implementation generates a deterministic outline from recorded
+project data. It does not call an LLM or execute external tooling.
+
 ### Report Response
 
 ```json
@@ -863,11 +866,7 @@ PATCH /api/v1/reports/{report_id}
 ```http
 GET    /api/v1/projects/{project_id}/telemetry
 POST   /api/v1/projects/{project_id}/telemetry
-GET    /api/v1/telemetry/{telemetry_id}
-PATCH  /api/v1/telemetry/{telemetry_id}
-DELETE /api/v1/telemetry/{telemetry_id}
-GET    /api/v1/campaign-steps/{step_id}/telemetry
-POST   /api/v1/campaign-steps/{step_id}/telemetry
+PATCH  /api/v1/projects/{project_id}/telemetry/{telemetry_id}
 ```
 
 ### Create Telemetry Record Request
@@ -877,17 +876,28 @@ POST   /api/v1/campaign-steps/{step_id}/telemetry
   "campaign_step_id": "step-001",
   "finding_id": null,
   "asset_id": "asset-001",
+  "evidence_id": "evidence-001",
   "attack_technique_id": "T1057",
   "expected_telemetry": [
-    "process_creation",
-    "command_execution"
+    {
+      "name": "process_creation",
+      "data_source": "edr",
+      "data_component": "Process Creation",
+      "signal": "Process discovery activity should create endpoint process telemetry.",
+      "required": true
+    }
   ],
   "observed_telemetry": [
-    "process_creation"
+    {
+      "name": "process_creation",
+      "data_source": "edr",
+      "data_component": "Process Creation",
+      "signal": "Sanitized endpoint event linked to evidence.",
+      "required": false
+    }
   ],
   "data_source": "edr",
   "detection_status": "partially_detected",
-  "evidence_id": "evidence-001",
   "review_note": "Command execution context was not available in the reviewed evidence."
 }
 ```
@@ -899,9 +909,10 @@ POST   /api/v1/campaign-steps/{step_id}/telemetry
   "telemetry_id": "telemetry-001",
   "project_id": "project-001",
   "campaign_step_id": "step-001",
+  "asset_id": "asset-001",
+  "evidence_id": "evidence-001",
   "attack_technique_id": "T1057",
   "detection_status": "partially_detected",
-  "evidence_id": "evidence-001",
   "reviewed_at": "2026-06-20T10:00:00Z"
 }
 ```
@@ -915,23 +926,24 @@ POST   /api/v1/campaign-steps/{step_id}/telemetry
 ```http
 GET    /api/v1/projects/{project_id}/detection-gaps
 POST   /api/v1/projects/{project_id}/detection-gaps
-GET    /api/v1/detection-gaps/{gap_id}
-PATCH  /api/v1/detection-gaps/{gap_id}
-DELETE /api/v1/detection-gaps/{gap_id}
+PATCH  /api/v1/projects/{project_id}/detection-gaps/{gap_id}
 ```
 
 ### Create Detection Gap Request
 
 ```json
 {
+  "telemetry_id": "telemetry-001",
   "campaign_step_id": "step-001",
   "finding_id": "finding-001",
+  "evidence_id": "evidence-001",
+  "asset_id": "asset-001",
   "attack_technique_id": "T1057",
   "gap_type": "incomplete_telemetry",
   "summary": "Process creation was observed, but command execution context was unavailable.",
   "impact": "Investigation context may be incomplete.",
   "recommendation": "Review endpoint logging policy, EDR configuration, and SIEM parsing.",
-  "evidence_id": "evidence-001"
+  "status": "open"
 }
 ```
 
@@ -944,18 +956,17 @@ DELETE /api/v1/detection-gaps/{gap_id}
 ```http
 GET  /api/v1/projects/{project_id}/approvals
 POST /api/v1/projects/{project_id}/approvals
-GET  /api/v1/approvals/{approval_id}
-POST /api/v1/approvals/{approval_id}/approve
-POST /api/v1/approvals/{approval_id}/reject
-POST /api/v1/approvals/{approval_id}/revoke
+POST /api/v1/projects/{project_id}/approvals/{approval_id}/approve
+POST /api/v1/projects/{project_id}/approvals/{approval_id}/reject
+POST /api/v1/projects/{project_id}/approvals/{approval_id}/revoke
 ```
 
 ### Create Approval Request
 
 ```json
 {
-  "entity_type": "campaign_step",
-  "entity_id": "step-001",
+  "entity_type": "action_type",
+  "entity_id": "exploit_validation_note",
   "risk_level": "controlled",
   "reason": "Approval required for controlled validation workflow.",
   "conditions": {
@@ -973,8 +984,8 @@ POST /api/v1/approvals/{approval_id}/revoke
 {
   "approval_id": "approval-001",
   "project_id": "project-001",
-  "entity_type": "campaign_step",
-  "entity_id": "step-001",
+  "entity_type": "action_type",
+  "entity_id": "exploit_validation_note",
   "risk_level": "controlled",
   "status": "pending",
   "requested_by": "user-001",
@@ -989,21 +1000,21 @@ POST /api/v1/approvals/{approval_id}/revoke
 ### Endpoints
 
 ```http
-GET /api/v1/projects/{project_id}/audit-logs
-GET /api/v1/audit-logs
-GET /api/v1/audit-logs/{audit_id}
+GET /api/v1/projects/{project_id}/audit
 ```
 
 ### Audit Log Response
 
 ```json
 {
-  "audit_id": "audit-001",
-  "actor_id": "user-001",
+  "audit_log_id": "audit-001",
   "project_id": "project-001",
-  "entity_type": "scope",
-  "entity_id": "scope-001",
-  "action": "scope_approved",
+  "actor_user_id": "user-001",
+  "action": "scope.created",
+  "resource_type": "scope",
+  "resource_id": "scope-001",
+  "summary": "Scope created with status approved",
+  "detail": {},
   "created_at": "2026-06-20T10:00:00Z"
 }
 ```
@@ -1017,10 +1028,8 @@ GET /api/v1/audit-logs/{audit_id}
 ```http
 POST /api/v1/projects/{project_id}/llm/tasks
 GET  /api/v1/projects/{project_id}/llm/tasks
-GET  /api/v1/llm/tasks/{llm_task_id}
-POST /api/v1/llm/tasks/{llm_task_id}/review
-POST /api/v1/llm/tasks/{llm_task_id}/accept
-POST /api/v1/llm/tasks/{llm_task_id}/reject
+POST /api/v1/projects/{project_id}/llm/tasks/{llm_task_id}/accept
+POST /api/v1/projects/{project_id}/llm/tasks/{llm_task_id}/reject
 ```
 
 ### Create LLM Task Request
@@ -1030,16 +1039,11 @@ POST /api/v1/llm/tasks/{llm_task_id}/reject
   "task_type": "campaign_plan_draft",
   "entity_type": "campaign",
   "entity_id": "campaign-001",
-  "input": {
-    "objective": "Review endpoint visibility for discovery behavior.",
-    "scope_ref": "scope-001",
-    "constraints": [
-      "no direct execution",
-      "scope-bound output",
-      "approval required for controlled steps"
-    ],
-    "output_format": "yaml"
-  }
+  "input_summary": "Draft a campaign plan from approved scope and sanitized objective.",
+  "output_content": "Structured draft content requiring human review.",
+  "assumptions": ["Scope is approved"],
+  "limitations": ["Draft only; not authorization"],
+  "requires_review": true
 }
 ```
 
@@ -1050,7 +1054,7 @@ POST /api/v1/llm/tasks/{llm_task_id}/reject
   "llm_task_id": "llm-task-001",
   "project_id": "project-001",
   "task_type": "campaign_plan_draft",
-  "status": "generated",
+  "status": "under_review",
   "requires_review": true,
   "created_at": "2026-06-20T10:00:00Z"
 }
@@ -1060,7 +1064,6 @@ POST /api/v1/llm/tasks/{llm_task_id}/reject
 
 ```json
 {
-  "review_status": "accepted",
   "review_note": "Accepted as campaign draft after scope review."
 }
 ```

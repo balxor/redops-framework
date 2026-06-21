@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.evidence import EvidenceCreate, EvidenceRead, EvidenceUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import PROJECT_WRITE_ROLES, ensure_project_access
 from app.services.store import store
 
@@ -29,7 +30,17 @@ def create_evidence(
     current_user: CurrentUser = Depends(get_current_user),
 ) -> EvidenceRead:
     ensure_project_access(db, current_user, project_id, PROJECT_WRITE_ROLES | {"operator"})
-    return store.create_evidence(db, project_id, current_user.user_id, payload)
+    evidence = store.create_evidence(db, project_id, current_user.user_id, payload)
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="evidence.created",
+        resource_type="evidence",
+        resource_id=evidence.evidence_id,
+        summary=f"Evidence created: {evidence.description[:120]}",
+    )
+    return evidence
 
 
 @router.get("/{evidence_id}", response_model=EvidenceRead)
@@ -58,5 +69,13 @@ def update_evidence(
     evidence = store.update_evidence(db, project_id, evidence_id, payload)
     if evidence is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evidence not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="evidence.updated",
+        resource_type="evidence",
+        resource_id=evidence_id,
+        summary=f"Evidence updated: {evidence.description[:120]}",
+    )
     return evidence
-

@@ -5,6 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.scope import Scope
+from app.services.approvals import has_active_approval
+from app.schemas.action import ActionCreate, ActionUpdate
 from app.schemas.asset import AssetCreate, AssetUpdate
 from app.schemas.campaign import CampaignCreate, CampaignUpdate
 from app.schemas.safety import SafetySummary
@@ -49,18 +51,26 @@ def validate_campaign_create(db: Session, project_id: str, payload: CampaignCrea
     _validate_campaign_steps(payload.steps)
 
 
-def validate_campaign_update(db: Session, project_id: str, payload: CampaignUpdate) -> None:
+def validate_campaign_update(db: Session, project_id: str, campaign_id: str, payload: CampaignUpdate) -> None:
     _require_approved_scope(db, project_id)
     if payload.steps is not None:
         _validate_campaign_steps(payload.steps)
+    if _campaign_update_requires_approval(payload) and not has_active_approval(db, project_id, "campaign", campaign_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Approved campaign approval is required before approving or activating campaign workflow",
+        )
 
 
-def validate_action_create(db: Session, project_id: str) -> None:
+def validate_action_create(db: Session, project_id: str, payload: ActionCreate) -> None:
     _require_approved_scope(db, project_id)
+    _validate_restricted_action_approval(db, project_id, payload.action_type)
 
 
-def validate_action_update(db: Session, project_id: str) -> None:
+def validate_action_update(db: Session, project_id: str, payload: ActionUpdate) -> None:
     _require_approved_scope(db, project_id)
+    if payload.action_type is not None:
+        _validate_restricted_action_approval(db, project_id, payload.action_type)
 
 
 def _approved_scopes(db: Session, project_id: str) -> list[Scope]:
@@ -116,3 +126,40 @@ def _validate_campaign_steps(steps: list) -> None:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Approved or executed campaign steps must keep approval_required enabled",
             )
+
+
+def _campaign_update_requires_approval(payload: CampaignUpdate) -> bool:
+    if payload.status in {"approved", "active"}:
+        return True
+    if payload.steps is None:
+        return False
+    return any(step.status in {"approved", "executed"} for step in payload.steps)
+
+
+def _validate_restricted_action_approval(db: Session, project_id: str, action_type: str) -> None:
+    restricted = _restricted_action_categories(db, project_id)
+    category = _restricted_category_for_action_type(action_type)
+    if category is None or category not in restricted:
+        return
+    if has_active_approval(db, project_id, "action_type", action_type):
+        return
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail=f"Approved action_type approval is required for restricted action {action_type}",
+    )
+
+
+def _restricted_action_categories(db: Session, project_id: str) -> set[str]:
+    return {
+        action
+        for scope in _approved_scopes(db, project_id)
+        for action in (scope.restricted_actions or [])
+    }
+
+
+def _restricted_category_for_action_type(action_type: str) -> str | None:
+    mapping = {
+        "exploit_validation_note": "exploit_validation",
+        "scanner_result": "external_tool_execution",
+    }
+    return mapping.get(action_type)

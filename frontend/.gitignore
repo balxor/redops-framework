@@ -35,3 +35,6 @@ pnpm-debug.log*
 # Test / cache
 coverage
 .eslintcache
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js

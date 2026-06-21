@@ -5,6 +5,7 @@ from app.core.database import get_db
 from app.core.rbac import get_current_user
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.schemas.user import CurrentUser
+from app.services.audit import record_audit_event
 from app.services.memberships import PROJECT_WRITE_ROLES, accessible_project_ids, add_project_owner, ensure_project_access
 from app.services.store import store
 
@@ -27,6 +28,15 @@ def create_project(
 ) -> ProjectRead:
     project = store.create_project(db, payload)
     add_project_owner(db, project.project_id, current_user.user_id)
+    record_audit_event(
+        db,
+        project_id=project.project_id,
+        actor_user_id=current_user.user_id,
+        action="project.created",
+        resource_type="project",
+        resource_id=project.project_id,
+        summary=f"Project created: {project.name}",
+    )
     return project
 
 
@@ -54,6 +64,15 @@ def update_project(
     project = store.update_project(db, project_id, payload)
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="project.updated",
+        resource_type="project",
+        resource_id=project_id,
+        summary=f"Project updated: {project.name}",
+    )
     return project
 
 
@@ -67,3 +86,12 @@ def delete_project(
     deleted = store.delete_project(db, project_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    record_audit_event(
+        db,
+        project_id=project_id,
+        actor_user_id=current_user.user_id,
+        action="project.deleted",
+        resource_type="project",
+        resource_id=project_id,
+        summary="Project deleted",
+    )

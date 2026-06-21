@@ -534,15 +534,18 @@ Audit log should record accepted LLM-assisted changes.
 Audit events:
 
 ```text
-llm_task_requested
-llm_output_generated
-llm_output_reviewed
-llm_output_accepted
-llm_output_rejected
+llm.output.generated
+llm.output.accepted
+llm.output.rejected
 llm_assisted_finding_created
 llm_assisted_report_created
 llm_assisted_campaign_draft_created
 ```
+
+Current implementation records LLM-assisted drafts as project-scoped tasks with
+status `under_review`. Accepting or rejecting the draft records the human
+review decision and audit event, but does not automatically create or modify a
+project artifact.
 
 Audit fields:
 
