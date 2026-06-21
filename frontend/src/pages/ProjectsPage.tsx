@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useCreateProject, useProjects, useUpdateProject } from "@/hooks/queries";
+import { useCreateProject, useDeleteProject, useProjects, useUpdateProject } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import {
   Badge,
@@ -36,10 +36,17 @@ const STATUSES: ProjectStatus[] = ["draft", "active", "paused", "completed", "ar
 
 export function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
+  const deleteProject = useDeleteProject();
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
   const canEdit = hasRole("admin", "lead_operator");
+  const canDelete = hasRole("admin");
   const [open, setOpen] = useState(false);
+
+  function removeProject(project: { project_id: string; name: string }) {
+    if (!window.confirm(`Delete project ${project.name}?`)) return;
+    deleteProject.mutate(project.project_id);
+  }
 
   return (
     <div className="space-y-6">
@@ -72,16 +79,25 @@ export function ProjectsPage() {
                 <Th>Client</Th>
                 <Th>Status</Th>
                 <Th>Updated</Th>
+                {canDelete && <Th>Actions</Th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-800">
               {projects.map((p) => (
-                <ProjectRow key={p.project_id} project={p} canEdit={canEdit} />
+                <ProjectRow
+                  key={p.project_id}
+                  project={p}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
+                  deletePending={deleteProject.isPending}
+                  onDelete={removeProject}
+                />
               ))}
             </tbody>
           </Table>
         </Card>
       )}
+      {deleteProject.error && <ErrorState error={deleteProject.error} />}
 
       <CreateProjectModal open={open} onClose={() => setOpen(false)} />
     </div>
@@ -91,9 +107,15 @@ export function ProjectsPage() {
 function ProjectRow({
   project,
   canEdit,
+  canDelete,
+  deletePending,
+  onDelete,
 }: {
   project: { project_id: string; name: string; engagement_type: EngagementType; client_name: string | null; status: ProjectStatus; updated_at: string };
   canEdit: boolean;
+  canDelete: boolean;
+  deletePending: boolean;
+  onDelete: (project: { project_id: string; name: string }) => void;
 }) {
   const update = useUpdateProject(project.project_id);
 
@@ -124,6 +146,13 @@ function ProjectRow({
         )}
       </Td>
       <Td>{formatDate(project.updated_at)}</Td>
+      {canDelete && (
+        <Td>
+          <Button variant="danger" onClick={() => onDelete(project)} loading={deletePending}>
+            Delete
+          </Button>
+        </Td>
+      )}
     </tr>
   );
 }

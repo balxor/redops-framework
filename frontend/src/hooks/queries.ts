@@ -199,6 +199,18 @@ export function useUpdateAsset(projectId: string) {
   });
 }
 
+export function useRemoveAsset(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (assetId: string) => assetsApi.remove(projectId, assetId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.assets(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+      qc.invalidateQueries({ queryKey: keys.safety(projectId) });
+    },
+  });
+}
+
 export function useCreateCampaign(projectId: string) {
   const qc = useQueryClient();
   return useMutation({

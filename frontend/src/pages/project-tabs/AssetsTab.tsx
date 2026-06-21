@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useAssets, useCreateAsset, useUpdateAsset } from "@/hooks/queries";
+import { useAssets, useCreateAsset, useRemoveAsset, useUpdateAsset } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import { Badge, Button, ErrorState, Field, Input, Select } from "@/components/ui";
 import { Modal } from "@/components/Modal";
@@ -13,10 +13,17 @@ const CRITICALITIES: Criticality[] = ["unknown", "low", "medium", "high", "criti
 export function AssetsTab({ projectId }: { projectId: string }) {
   const query = useAssets(projectId);
   const update = useUpdateAsset(projectId);
+  const remove = useRemoveAsset(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
   const canUpdate = canCreate;
+  const canRemove = canCreate;
   const [open, setOpen] = useState(false);
+
+  function removeAsset(asset: AssetRead) {
+    if (!window.confirm(`Remove asset ${asset.value}?`)) return;
+    remove.mutate(asset.asset_id);
+  }
 
   const columns: Column<AssetRead>[] = [
     { header: "Value", render: (a) => <span className="font-mono text-xs text-slate-100">{a.value}</span> },
@@ -43,6 +50,17 @@ export function AssetsTab({ projectId }: { projectId: string }) {
         ),
     },
     { header: "Environment", render: (a) => a.environment || "—" },
+    {
+      header: "Actions",
+      render: (a) =>
+        canRemove ? (
+          <Button variant="danger" onClick={() => removeAsset(a)} loading={remove.isPending}>
+            Remove
+          </Button>
+        ) : (
+          "-"
+        ),
+    },
   ];
 
   return (
@@ -55,6 +73,7 @@ export function AssetsTab({ projectId }: { projectId: string }) {
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add asset</Button> : undefined}
       />
       {update.error && <ErrorState error={update.error} />}
+      {remove.error && <ErrorState error={remove.error} />}
       <CreateAssetModal projectId={projectId} open={open} onClose={() => setOpen(false)} />
     </>
   );
