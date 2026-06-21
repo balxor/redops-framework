@@ -447,6 +447,17 @@ export function useCreateMember(projectId: string) {
   });
 }
 
+export function useRemoveMember(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (memberId: string) => membersApi.remove(projectId, memberId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.members(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
+  });
+}
+
 // --- Users & ATT&CK --------------------------------------------------------
 
 export const useUsers = () => useQuery({ queryKey: keys.users, queryFn: usersApi.list });

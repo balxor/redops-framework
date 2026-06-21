@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useCreateMember, useMembers, useUsers } from "@/hooks/queries";
+import { useCreateMember, useMembers, useRemoveMember, useUsers } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Select } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { formatDate, humanize } from "@/lib/format";
@@ -11,13 +11,26 @@ import type { ProjectMemberRead, ProjectRole } from "@/types";
 export function MembersTab({ projectId }: { projectId: string }) {
   const query = useMembers(projectId);
   const users = useUsers();
+  const remove = useRemoveMember(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator");
+  const canRemove = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<ProjectMemberRead>[] = [
     { header: "User ID", render: (m) => <span className="font-mono text-xs text-slate-300">{m.user_id}</span> },
     { header: "Project role", render: (m) => <Badge tone="blue">{humanize(m.project_role)}</Badge> },
     { header: "Added", render: (m) => formatDate(m.created_at) },
+    {
+      header: "Actions",
+      render: (m) =>
+        canRemove ? (
+          <Button variant="danger" onClick={() => remove.mutate(m.project_member_id)} loading={remove.isPending}>
+            Remove
+          </Button>
+        ) : (
+          "-"
+        ),
+    },
   ];
 
   return (
@@ -29,6 +42,7 @@ export function MembersTab({ projectId }: { projectId: string }) {
         rowKey={(m) => m.project_member_id}
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add member</Button> : undefined}
       />
+      {remove.error && <ErrorState error={remove.error} />}
       <CreateMemberModal projectId={projectId} open={open} onClose={() => setOpen(false)} users={users.data ?? []} />
     </>
   );
