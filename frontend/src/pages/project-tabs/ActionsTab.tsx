@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useActions, useAssets, useCampaigns, useCreateAction } from "@/hooks/queries";
+import { useActions, useAssets, useCampaigns, useCreateAction, useUpdateAction } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { humanize, statusTone } from "@/lib/format";
@@ -12,14 +12,59 @@ export function ActionsTab({ projectId }: { projectId: string }) {
   const query = useActions(projectId);
   const campaigns = useCampaigns(projectId);
   const assets = useAssets(projectId);
+  const update = useUpdateAction(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<ActionRead>[] = [
     { header: "Summary", render: (a) => <span className="font-medium text-slate-100">{a.action_summary}</span> },
     { header: "Type", render: (a) => humanize(a.action_type) },
-    { header: "Result", render: (a) => <Badge tone={statusTone(a.result)}>{humanize(a.result)}</Badge> },
-    { header: "Detection", render: (a) => <Badge tone={statusTone(a.detection_status)}>{humanize(a.detection_status)}</Badge> },
+    {
+      header: "Result",
+      render: (a) =>
+        canUpdate ? (
+          <Select
+            value={a.result}
+            disabled={update.isPending}
+            onChange={(e) =>
+              update.mutate({ actionId: a.action_id, body: { result: e.target.value as ActionResult } })
+            }
+          >
+            {ACTION_RESULTS.map((result) => (
+              <option key={result} value={result}>
+                {humanize(result)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <Badge tone={statusTone(a.result)}>{humanize(a.result)}</Badge>
+        ),
+    },
+    {
+      header: "Detection",
+      render: (a) =>
+        canUpdate ? (
+          <Select
+            value={a.detection_status}
+            disabled={update.isPending}
+            onChange={(e) =>
+              update.mutate({
+                actionId: a.action_id,
+                body: { detection_status: e.target.value as DetectionStatus },
+              })
+            }
+          >
+            {DETECTION_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <Badge tone={statusTone(a.detection_status)}>{humanize(a.detection_status)}</Badge>
+        ),
+    },
   ];
 
   return (
@@ -31,6 +76,7 @@ export function ActionsTab({ projectId }: { projectId: string }) {
         rowKey={(a) => a.action_id}
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add action</Button> : undefined}
       />
+      {update.error && <ErrorState error={update.error} />}
       <CreateActionModal
         projectId={projectId}
         open={open}

@@ -24,6 +24,7 @@ import {
 import type {
   AssetCreate,
   ActionCreate,
+  ActionUpdate,
   ApprovalCreate,
   ApprovalDecision,
   CampaignCreate,
@@ -194,6 +195,18 @@ export function useCreateAction(projectId: string) {
   return useMutation({
     mutationFn: (body: ActionCreate) => actionsApi.create(projectId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.actions(projectId) }),
+  });
+}
+
+export function useUpdateAction(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ actionId, body }: { actionId: string; body: ActionUpdate }) =>
+      actionsApi.update(projectId, actionId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.actions(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+    },
   });
 }
 
