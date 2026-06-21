@@ -14,7 +14,7 @@ decisions behind it.
 
 ## Layered structure
 
-```
+```text
 types/                 Plain TS interfaces mirroring backend/app/schemas
   │
 lib/apiClient.ts       fetch wrapper: base URL, bearer token, error normalisation

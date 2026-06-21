@@ -110,7 +110,7 @@ and [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for structure and design de
 
 ## Project layout
 
-```
+```text
 frontend/
 ├── index.html
 ├── src/
