@@ -436,6 +436,227 @@ def test_project_asset_campaign_flow() -> None:
     }.issubset(audit_actions)
 
 
+def test_operational_update_and_removal_flows_are_audited() -> None:
+    headers = auth_headers()
+    project_id = create_project_with_approved_scope(
+        headers,
+        "Operational Update Assessment",
+        "ops.example.test",
+    )
+
+    scope_response = client.get(f"/api/v1/projects/{project_id}/scopes", headers=headers)
+    assert scope_response.status_code == 200
+    scope_id = scope_response.json()[0]["scope_id"]
+
+    patch_scope_response = client.patch(
+        f"/api/v1/projects/{project_id}/scopes/{scope_id}",
+        headers=headers,
+        json={"status": "pending_review"},
+    )
+    assert patch_scope_response.status_code == 200
+    assert patch_scope_response.json()["status"] == "pending_review"
+
+    patch_scope_response = client.patch(
+        f"/api/v1/projects/{project_id}/scopes/{scope_id}",
+        headers=headers,
+        json={"status": "approved"},
+    )
+    assert patch_scope_response.status_code == 200
+
+    asset_response = client.post(
+        f"/api/v1/projects/{project_id}/assets",
+        headers=headers,
+        json={
+            "value": "ops.example.test",
+            "type": "domain",
+            "environment": "lab",
+            "criticality": "low",
+        },
+    )
+    assert asset_response.status_code == 201
+    asset_id = asset_response.json()["asset_id"]
+
+    patch_asset_response = client.patch(
+        f"/api/v1/projects/{project_id}/assets/{asset_id}",
+        headers=headers,
+        json={"criticality": "critical"},
+    )
+    assert patch_asset_response.status_code == 200
+    assert patch_asset_response.json()["criticality"] == "critical"
+
+    campaign_response = client.post(
+        f"/api/v1/projects/{project_id}/campaigns",
+        headers=headers,
+        json={
+            "name": "Operational workflow review",
+            "objective": "Validate update endpoints without execution.",
+            "status": "planned",
+        },
+    )
+    assert campaign_response.status_code == 201
+    campaign_id = campaign_response.json()["campaign_id"]
+
+    patch_campaign_response = client.patch(
+        f"/api/v1/projects/{project_id}/campaigns/{campaign_id}",
+        headers=headers,
+        json={"status": "completed"},
+    )
+    assert patch_campaign_response.status_code == 200
+    assert patch_campaign_response.json()["status"] == "completed"
+
+    action_response = client.post(
+        f"/api/v1/projects/{project_id}/actions",
+        headers=headers,
+        json={
+            "campaign_id": campaign_id,
+            "asset_id": asset_id,
+            "action_type": "manual_validation",
+            "action_summary": "Recorded manual validation note.",
+            "result": "planned",
+            "detection_status": "unknown",
+        },
+    )
+    assert action_response.status_code == 201
+    action_id = action_response.json()["action_id"]
+
+    patch_action_response = client.patch(
+        f"/api/v1/projects/{project_id}/actions/{action_id}",
+        headers=headers,
+        json={"result": "executed", "detection_status": "detected"},
+    )
+    assert patch_action_response.status_code == 200
+    assert patch_action_response.json()["result"] == "executed"
+    assert patch_action_response.json()["detection_status"] == "detected"
+
+    evidence_response = client.post(
+        f"/api/v1/projects/{project_id}/evidence",
+        headers=headers,
+        json={
+            "action_id": action_id,
+            "asset_id": asset_id,
+            "evidence_type": "manual_note",
+            "description": "Sanitized manual validation note.",
+            "sanitized": False,
+        },
+    )
+    assert evidence_response.status_code == 201
+    evidence_id = evidence_response.json()["evidence_id"]
+
+    patch_evidence_response = client.patch(
+        f"/api/v1/projects/{project_id}/evidence/{evidence_id}",
+        headers=headers,
+        json={"sanitized": True},
+    )
+    assert patch_evidence_response.status_code == 200
+    assert patch_evidence_response.json()["sanitized"] is True
+
+    telemetry_response = client.post(
+        f"/api/v1/projects/{project_id}/telemetry",
+        headers=headers,
+        json={
+            "action_id": action_id,
+            "asset_id": asset_id,
+            "evidence_id": evidence_id,
+            "expected_telemetry": [],
+            "observed_telemetry": [],
+            "detection_status": "unknown",
+        },
+    )
+    assert telemetry_response.status_code == 201
+    telemetry_id = telemetry_response.json()["telemetry_id"]
+
+    patch_telemetry_response = client.patch(
+        f"/api/v1/projects/{project_id}/telemetry/{telemetry_id}",
+        headers=headers,
+        json={"detection_status": "detected", "review_note": "Reviewed in smoke coverage."},
+    )
+    assert patch_telemetry_response.status_code == 200
+    assert patch_telemetry_response.json()["detection_status"] == "detected"
+
+    gap_response = client.post(
+        f"/api/v1/projects/{project_id}/detection-gaps",
+        headers=headers,
+        json={
+            "telemetry_id": telemetry_id,
+            "gap_type": "not_reviewed",
+            "summary": "Review pending for telemetry record.",
+            "status": "open",
+        },
+    )
+    assert gap_response.status_code == 201
+    gap_id = gap_response.json()["gap_id"]
+
+    patch_gap_response = client.patch(
+        f"/api/v1/projects/{project_id}/detection-gaps/{gap_id}",
+        headers=headers,
+        json={"status": "resolved"},
+    )
+    assert patch_gap_response.status_code == 200
+    assert patch_gap_response.json()["status"] == "resolved"
+
+    approval_response = client.post(
+        f"/api/v1/projects/{project_id}/approvals",
+        headers=headers,
+        json={
+            "entity_type": "campaign",
+            "entity_id": campaign_id,
+            "risk_level": "controlled",
+            "reason": "Controlled campaign approval for update coverage.",
+        },
+    )
+    assert approval_response.status_code == 201
+    approval_id = approval_response.json()["approval_id"]
+
+    approve_response = client.post(
+        f"/api/v1/projects/{project_id}/approvals/{approval_id}/approve",
+        headers=headers,
+        json={"decision_note": "Approved for test coverage."},
+    )
+    assert approve_response.status_code == 200
+
+    revoke_response = client.post(
+        f"/api/v1/projects/{project_id}/approvals/{approval_id}/revoke",
+        headers=headers,
+        json={"decision_note": "Revoked after coverage check."},
+    )
+    assert revoke_response.status_code == 200
+    assert revoke_response.json()["status"] == "revoked"
+
+    disposable_asset_response = client.post(
+        f"/api/v1/projects/{project_id}/assets",
+        headers=headers,
+        json={
+            "value": "ops.example.test",
+            "type": "domain",
+            "environment": "lab",
+            "criticality": "low",
+        },
+    )
+    assert disposable_asset_response.status_code == 201
+    disposable_asset_id = disposable_asset_response.json()["asset_id"]
+
+    delete_asset_response = client.delete(
+        f"/api/v1/projects/{project_id}/assets/{disposable_asset_id}",
+        headers=headers,
+    )
+    assert delete_asset_response.status_code == 204
+
+    audit_response = client.get(f"/api/v1/projects/{project_id}/audit", headers=headers)
+    assert audit_response.status_code == 200
+    audit_actions = {event["action"] for event in audit_response.json()}
+    assert {
+        "scope.updated",
+        "asset.updated",
+        "campaign.updated",
+        "action.updated",
+        "evidence.updated",
+        "telemetry.updated",
+        "detection_gap.updated",
+        "approval.revoked",
+        "asset.deleted",
+    }.issubset(audit_actions)
+
+
 def test_safety_gate_rejects_out_of_scope_asset() -> None:
     headers = auth_headers()
     project_response = client.post(
