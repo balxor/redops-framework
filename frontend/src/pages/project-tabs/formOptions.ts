@@ -8,6 +8,7 @@ import type {
   DetectionGapType,
   Environment,
   EvidenceType,
+  FindingStatus,
   LlmTaskType,
   ProjectRole,
   ReportFormat,
@@ -61,6 +62,15 @@ export const EVIDENCE_TYPES: EvidenceType[] = [
   "edr_alert",
   "document",
   "other",
+];
+
+export const FINDING_STATUSES: FindingStatus[] = [
+  "draft",
+  "under_review",
+  "confirmed",
+  "risk_accepted",
+  "remediated",
+  "closed",
 ];
 
 export const REPORT_FORMATS: ReportFormat[] = ["markdown", "html", "pdf"];

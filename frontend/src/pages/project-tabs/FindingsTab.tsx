@@ -1,18 +1,21 @@
 import { useState, type FormEvent } from "react";
-import { useCreateFinding, useFindings } from "@/hooks/queries";
+import { useCreateFinding, useFindings, useUpdateFinding } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { humanize, statusTone } from "@/lib/format";
 import { ResourceTable, type Column } from "./ResourceTable";
-import type { FindingRead, Severity } from "@/types";
+import { FINDING_STATUSES } from "./formOptions";
+import type { FindingRead, FindingStatus, Severity } from "@/types";
 
 const SEVERITIES: Severity[] = ["informational", "low", "medium", "high", "critical"];
 
 export function FindingsTab({ projectId }: { projectId: string }) {
   const query = useFindings(projectId);
+  const update = useUpdateFinding(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canReview = hasRole("admin", "lead_operator", "reviewer");
   const [open, setOpen] = useState(false);
 
   const columns: Column<FindingRead>[] = [
@@ -20,6 +23,31 @@ export function FindingsTab({ projectId }: { projectId: string }) {
     { header: "Severity", render: (f) => <Badge tone={statusTone(f.severity)}>{humanize(f.severity)}</Badge> },
     { header: "Status", render: (f) => <Badge tone={statusTone(f.status)}>{humanize(f.status)}</Badge> },
     { header: "ATT&CK", render: (f) => f.attack_technique_id || "—" },
+    {
+      header: "Status update",
+      render: (f) =>
+        canReview ? (
+          <Select
+            aria-label="Finding status"
+            disabled={update.isPending}
+            value={f.status}
+            onChange={(e) =>
+              update.mutate({
+                findingId: f.finding_id,
+                body: { status: e.target.value as FindingStatus },
+              })
+            }
+          >
+            {FINDING_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          "-"
+        ),
+    },
   ];
 
   return (
