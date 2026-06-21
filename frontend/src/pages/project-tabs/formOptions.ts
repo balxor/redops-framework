@@ -4,6 +4,7 @@ import type {
   ApprovalEntityType,
   ApprovalRiskLevel,
   DetectionStatus,
+  DetectionGapStatus,
   DetectionGapType,
   Environment,
   EvidenceType,
@@ -102,6 +103,14 @@ export const DETECTION_GAP_TYPES: DetectionGapType[] = [
   "missing_detection_rule",
   "blocked_before_detection",
   "not_reviewed",
+];
+
+export const DETECTION_GAP_STATUSES: DetectionGapStatus[] = [
+  "open",
+  "under_review",
+  "accepted",
+  "resolved",
+  "closed",
 ];
 
 export function toApiDateTime(value: string): string {

@@ -10,8 +10,8 @@ import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/com
 import { Modal } from "@/components/Modal";
 import { formatDateTime, humanize, statusTone } from "@/lib/format";
 import { ResourceTable, type Column } from "./ResourceTable";
-import { DETECTION_GAP_TYPES, optionLabel } from "./formOptions";
-import type { DetectionGapRead, DetectionGapType } from "@/types";
+import { DETECTION_GAP_STATUSES, DETECTION_GAP_TYPES, optionLabel } from "./formOptions";
+import type { DetectionGapRead, DetectionGapStatus, DetectionGapType } from "@/types";
 
 export function DetectionGapsTab({ projectId }: { projectId: string }) {
   const query = useDetectionGaps(projectId);
@@ -28,16 +28,26 @@ export function DetectionGapsTab({ projectId }: { projectId: string }) {
     { header: "Technique", render: (gap) => gap.attack_technique_id || "-" },
     { header: "Created", render: (gap) => formatDateTime(gap.created_at) },
     {
-      header: "Review",
+      header: "Status update",
       render: (gap) =>
-        canReview && gap.status !== "resolved" && gap.status !== "closed" ? (
-          <Button
-            variant="secondary"
-            loading={update.isPending}
-            onClick={() => update.mutate({ gapId: gap.gap_id, body: { status: "resolved" } })}
+        canReview ? (
+          <Select
+            aria-label="Detection gap status"
+            disabled={update.isPending}
+            value={gap.status}
+            onChange={(e) =>
+              update.mutate({
+                gapId: gap.gap_id,
+                body: { status: e.target.value as DetectionGapStatus },
+              })
+            }
           >
-            Resolve
-          </Button>
+            {DETECTION_GAP_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
         ) : (
           "-"
         ),
