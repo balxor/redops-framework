@@ -32,21 +32,29 @@ export function TelemetryTab({ projectId }: { projectId: string }) {
     { header: "Review note", render: (row) => <span className="font-medium text-slate-100">{row.review_note || "-"}</span> },
     { header: "Created", render: (row) => formatDateTime(row.created_at) },
     {
-      header: "Review",
+      header: "Status update",
       render: (row) =>
-        canReview && row.detection_status !== "detected" ? (
-          <Button
-            variant="secondary"
-            loading={update.isPending}
-            onClick={() =>
+        canReview ? (
+          <Select
+            aria-label="Telemetry detection status"
+            disabled={update.isPending}
+            value={row.detection_status}
+            onChange={(e) =>
               update.mutate({
                 telemetryId: row.telemetry_id,
-                body: { detection_status: "detected", reviewed_at: new Date().toISOString() },
+                body: {
+                  detection_status: e.target.value as TelemetryDetectionStatus,
+                  reviewed_at: new Date().toISOString(),
+                },
               })
             }
           >
-            Mark detected
-          </Button>
+            {TELEMETRY_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
         ) : (
           "-"
         ),
