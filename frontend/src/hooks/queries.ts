@@ -23,6 +23,7 @@ import {
 } from "@/api/resources";
 import type {
   AssetCreate,
+  AssetUpdate,
   ActionCreate,
   ActionUpdate,
   ApprovalCreate,
@@ -167,6 +168,19 @@ export function useCreateAsset(projectId: string) {
   return useMutation({
     mutationFn: (body: AssetCreate) => assetsApi.create(projectId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.assets(projectId) }),
+  });
+}
+
+export function useUpdateAsset(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ assetId, body }: { assetId: string; body: AssetUpdate }) =>
+      assetsApi.update(projectId, assetId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.assets(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
+      qc.invalidateQueries({ queryKey: keys.safety(projectId) });
+    },
   });
 }
 

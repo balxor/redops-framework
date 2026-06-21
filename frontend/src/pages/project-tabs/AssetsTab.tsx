@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useAssets, useCreateAsset } from "@/hooks/queries";
+import { useAssets, useCreateAsset, useUpdateAsset } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import { Badge, Button, ErrorState, Field, Input, Select } from "@/components/ui";
 import { Modal } from "@/components/Modal";
@@ -12,14 +12,36 @@ const CRITICALITIES: Criticality[] = ["unknown", "low", "medium", "high", "criti
 
 export function AssetsTab({ projectId }: { projectId: string }) {
   const query = useAssets(projectId);
+  const update = useUpdateAsset(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
 
   const columns: Column<AssetRead>[] = [
     { header: "Value", render: (a) => <span className="font-mono text-xs text-slate-100">{a.value}</span> },
     { header: "Type", render: (a) => humanize(a.type) },
-    { header: "Criticality", render: (a) => <Badge tone={statusTone(a.criticality)}>{humanize(a.criticality)}</Badge> },
+    {
+      header: "Criticality",
+      render: (a) =>
+        canUpdate ? (
+          <Select
+            value={a.criticality}
+            disabled={update.isPending}
+            onChange={(e) =>
+              update.mutate({ assetId: a.asset_id, body: { criticality: e.target.value as Criticality } })
+            }
+          >
+            {CRITICALITIES.map((criticality) => (
+              <option key={criticality} value={criticality}>
+                {humanize(criticality)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <Badge tone={statusTone(a.criticality)}>{humanize(a.criticality)}</Badge>
+        ),
+    },
     { header: "Environment", render: (a) => a.environment || "—" },
   ];
 
@@ -32,6 +54,7 @@ export function AssetsTab({ projectId }: { projectId: string }) {
         emptyTitle="No assets registered"
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add asset</Button> : undefined}
       />
+      {update.error && <ErrorState error={update.error} />}
       <CreateAssetModal projectId={projectId} open={open} onClose={() => setOpen(false)} />
     </>
   );
