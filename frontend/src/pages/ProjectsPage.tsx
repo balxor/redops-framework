@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useCreateProject, useProjects } from "@/hooks/queries";
+import { useCreateProject, useProjects, useUpdateProject } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import {
   Badge,
@@ -38,6 +38,7 @@ export function ProjectsPage() {
   const { data: projects, isLoading, error } = useProjects();
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator");
+  const canEdit = hasRole("admin", "lead_operator");
   const [open, setOpen] = useState(false);
 
   return (
@@ -75,19 +76,7 @@ export function ProjectsPage() {
             </thead>
             <tbody className="divide-y divide-ink-800">
               {projects.map((p) => (
-                <tr key={p.project_id} className="hover:bg-ink-700/30">
-                  <Td>
-                    <Link to={`/projects/${p.project_id}`} className="font-medium text-slate-100 hover:text-brand-400">
-                      {p.name}
-                    </Link>
-                  </Td>
-                  <Td>{humanize(p.engagement_type)}</Td>
-                  <Td>{p.client_name || "—"}</Td>
-                  <Td>
-                    <Badge tone={statusTone(p.status)}>{humanize(p.status)}</Badge>
-                  </Td>
-                  <Td>{formatDate(p.updated_at)}</Td>
-                </tr>
+                <ProjectRow key={p.project_id} project={p} canEdit={canEdit} />
               ))}
             </tbody>
           </Table>
@@ -96,6 +85,46 @@ export function ProjectsPage() {
 
       <CreateProjectModal open={open} onClose={() => setOpen(false)} />
     </div>
+  );
+}
+
+function ProjectRow({
+  project,
+  canEdit,
+}: {
+  project: { project_id: string; name: string; engagement_type: EngagementType; client_name: string | null; status: ProjectStatus; updated_at: string };
+  canEdit: boolean;
+}) {
+  const update = useUpdateProject(project.project_id);
+
+  return (
+    <tr className="hover:bg-ink-700/30">
+      <Td>
+        <Link to={`/projects/${project.project_id}`} className="font-medium text-slate-100 hover:text-brand-400">
+          {project.name}
+        </Link>
+      </Td>
+      <Td>{humanize(project.engagement_type)}</Td>
+      <Td>{project.client_name || "—"}</Td>
+      <Td>
+        {canEdit ? (
+          <Select
+            value={project.status}
+            disabled={update.isPending}
+            onChange={(e) => update.mutate({ status: e.target.value as ProjectStatus })}
+          >
+            {STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <Badge tone={statusTone(project.status)}>{humanize(project.status)}</Badge>
+        )}
+      </Td>
+      <Td>{formatDate(project.updated_at)}</Td>
+    </tr>
   );
 }
 
