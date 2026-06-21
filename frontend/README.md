@@ -79,15 +79,25 @@ Aligned with the **current** backend surface (`backend/app/api/v1`).
 | Area              | Status | Notes                                                          |
 | ----------------- | ------ | -------------------------------------------------------------- |
 | Login / session   | ✅ Full | JWT login, `/auth/me` restore, global 401 logout              |
-| Dashboard         | ✅ Full | Project counts + recent projects                              |
+| Dashboard         | ✅ Full | Project counts, paused count, recent projects by update time  |
 | Projects          | ✅ CRUD | List, create, detail, status update, delete (per backend)     |
 | Project › Overview| ✅ Full | Details + status management                                   |
-| Project › Assets  | ✅ List + create | Create respects the backend safety gate              |
-| Project › Findings| ✅ List + create |                                                      |
-| Project › Scopes / Campaigns / Actions / Evidence / Reports / Members | ✅ List (read) | Create/edit forms are scaffolded via the generic table + hooks and ready to extend |
+| Project › Scopes  | ✅ Create + update | Status updates refresh safety and audit views        |
+| Project › Assets  | ✅ CRUD | Create/update/delete respect the backend safety gate          |
+| Project › Campaigns | ✅ Create + update | Status updates follow backend approval rules        |
+| Project › Actions | ✅ Create + update | Result and detection status updates only record notes |
+| Project › Evidence | ✅ Create + update | Sanitized flag can be reviewed inline               |
+| Project › Findings| ✅ Create + update | Status updates are available inline                  |
+| Project › Reports | ✅ Create + update | Create/generate/status update workflow               |
+| Project › Members | ✅ Create + delete | Membership list with guarded removal                 |
+| Project › Approvals | ✅ Create + decide | Approve, reject, and revoke flows                  |
+| Project › LLM Drafts | ✅ Create + review | Human review gate for accept/reject               |
+| Project › Telemetry | ✅ Create + update | Detection status review workflow                   |
+| Project › Detection Gaps | ✅ Create + update | Gap status review workflow                  |
+| Project › Audit   | ✅ Full | Audit table with local search/filter                        |
 | Project › Safety  | ✅ Full | Scope-gate summary + restricted actions                       |
-| Users (admin)     | ✅ List + create | Admin-only route guard                                |
-| ATT&CK            | ✅ List | Reference techniques from `/attack/techniques`                |
+| Users (admin)     | ✅ Create + update | Active status and single-role updates, admin-only route guard |
+| ATT&CK            | ✅ List + search | Reference techniques from `/attack/techniques`       |
 
 > The backend currently exposes `DELETE` only for projects, assets, and members.
 > Scopes/campaigns/actions/evidence/findings/reports are create + update only,
@@ -116,15 +126,17 @@ frontend/
 
 ---
 
-## Extending a sub-resource to full CRUD
+## Extending a sub-resource workflow
 
-The read views are generic. To add a create form for, say, campaigns:
+Most project tabs use `ResourceTable` for loading, error, empty, and count
+states. To add a mutation workflow for a sub-resource:
 
-1. Add `useCreateCampaign` in `src/hooks/queries.ts` (mirror `useCreateAsset`).
-2. Build a modal like `project-tabs/AssetsTab.tsx`.
-3. Wire it into the tab's `toolbar` prop.
+1. Add or reuse the typed API function in `src/api/resources.ts`.
+2. Add a TanStack mutation hook in `src/hooks/queries.ts`.
+3. Invalidate the resource query and any dependent audit/safety query keys.
+4. Add inline controls or a modal in the relevant `project-tabs/*Tab.tsx`.
 
-Types and the API wrapper (`campaignsApi.create`) already exist.
+Keep destructive actions guarded by role checks and a user confirmation.
 
 ---
 

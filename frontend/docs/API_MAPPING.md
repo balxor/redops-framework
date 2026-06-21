@@ -19,7 +19,7 @@ relative to `VITE_API_BASE_URL` (default `/api/v1`). Every request except
 | GET    | `/users`         | `usersApi.list`    | `useUsers`      |
 | GET    | `/users/{id}`    | `usersApi.get`     | —               |
 | POST   | `/users`         | `usersApi.create`  | `useCreateUser` |
-| PATCH  | `/users/{id}`    | `usersApi.update`  | —               |
+| PATCH  | `/users/{id}`    | `usersApi.update`  | `useUpdateUser` |
 
 ## Projects
 
@@ -35,17 +35,21 @@ relative to `VITE_API_BASE_URL` (default `/api/v1`). Every request except
 
 Base prefix: `/projects/{project_id}`.
 
-| Resource  | GET list | POST create | PATCH update | DELETE | Hooks                                   |
-| --------- | -------- | ----------- | ------------ | ------ | --------------------------------------- |
-| scopes    | ✅       | ✅          | ✅           | ❌     | `useScopes`, `useCreateScope`           |
-| assets    | ✅       | ✅          | ✅           | ✅     | `useAssets`, `useCreateAsset`           |
-| campaigns | ✅       | ✅          | ✅           | ❌     | `useCampaigns`                          |
-| actions   | ✅       | ✅          | ✅           | ❌     | `useActions`                            |
-| evidence  | ✅       | ✅          | ✅           | ❌     | `useEvidence`                           |
-| findings  | ✅       | ✅          | ✅           | ❌     | `useFindings`, `useCreateFinding`       |
-| reports   | ✅       | ✅          | ✅           | ❌     | `useReports`                            |
-| members   | ✅       | ✅          | —            | ✅     | `useMembers`, `useCreateMember`         |
-| safety    | `GET /safety/summary` | — | — | —      | `useSafetySummary`                      |
+| Resource       | GET list | POST create | PATCH update | DELETE | Hooks |
+| -------------- | -------- | ----------- | ------------ | ------ | ----- |
+| scopes         | ✅       | ✅          | ✅           | ❌     | `useScopes`, `useCreateScope`, `useUpdateScope` |
+| assets         | ✅       | ✅          | ✅           | ✅     | `useAssets`, `useCreateAsset`, `useUpdateAsset`, `useRemoveAsset` |
+| campaigns      | ✅       | ✅          | ✅           | ❌     | `useCampaigns`, `useCreateCampaign`, `useUpdateCampaign` |
+| actions        | ✅       | ✅          | ✅           | ❌     | `useActions`, `useCreateAction`, `useUpdateAction` |
+| evidence       | ✅       | ✅          | ✅           | ❌     | `useEvidence`, `useCreateEvidence`, `useUpdateEvidence` |
+| findings       | ✅       | ✅          | ✅           | ❌     | `useFindings`, `useCreateFinding`, `useUpdateFinding` |
+| reports        | ✅       | ✅          | ✅           | ❌     | `useReports`, `useCreateReport`, `useGenerateReport`, `useUpdateReport` |
+| members        | ✅       | ✅          | —            | ✅     | `useMembers`, `useCreateMember`, `useRemoveMember` |
+| approvals      | ✅       | ✅          | decision routes | ❌  | `useApprovals`, `useCreateApproval`, `useApproveApproval`, `useRejectApproval`, `useRevokeApproval` |
+| LLM tasks      | ✅       | ✅          | review routes | ❌  | `useLlmTasks`, `useCreateLlmTask`, `useAcceptLlmTask`, `useRejectLlmTask` |
+| telemetry      | ✅       | ✅          | ✅           | ❌     | `useTelemetry`, `useCreateTelemetry`, `useUpdateTelemetry` |
+| detection gaps | ✅       | ✅          | ✅           | ❌     | `useDetectionGaps`, `useCreateDetectionGap`, `useUpdateDetectionGap` |
+| safety         | `GET /safety/summary` | — | — | — | `useSafetySummary` |
 
 > The DELETE column reflects what the backend actually exposes today. The API
 > client only defines `remove()` where a DELETE route exists, so the type system
