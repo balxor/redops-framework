@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 import { useCreateUser, useUpdateUser, useUsers } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import {
-  Badge,
   Button,
   Card,
   EmptyState,
@@ -21,6 +20,7 @@ import { formatDateTime, humanize } from "@/lib/format";
 import type { RoleName } from "@/types";
 
 const ROLES: RoleName[] = ["admin", "lead_operator", "operator", "reviewer", "client_viewer"];
+const MULTIPLE_ROLES = "__multiple";
 
 export function UsersPage() {
   const { hasRole } = useAuth();
@@ -65,13 +65,18 @@ export function UsersPage() {
                   </Td>
                   <Td>{u.email}</Td>
                   <Td>
-                    <span className="flex flex-wrap gap-1">
-                      {u.roles.map((r) => (
-                        <Badge key={r} tone="blue">
-                          {humanize(r)}
-                        </Badge>
+                    <Select
+                      value={u.roles.length === 1 ? u.roles[0] : MULTIPLE_ROLES}
+                      disabled={update.isPending || u.roles.length !== 1}
+                      onChange={(e) => update.mutate({ userId: u.user_id, body: { roles: [e.target.value as RoleName] } })}
+                    >
+                      {u.roles.length !== 1 && <option value={MULTIPLE_ROLES}>Multiple roles</option>}
+                      {ROLES.map((role) => (
+                        <option key={role} value={role}>
+                          {humanize(role)}
+                        </option>
                       ))}
-                    </span>
+                    </Select>
                   </Td>
                   <Td>
                     <Select
