@@ -19,10 +19,16 @@ interface ResourceTableProps<T> {
 // read-only sub-resource tab to avoid duplicating fetch/empty/error logic.
 export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar }: ResourceTableProps<T>) {
   const { data, isLoading, error } = query;
+  const countLabel = data ? `${data.length} ${data.length === 1 ? "record" : "records"}` : null;
 
   return (
     <div className="space-y-4">
-      {toolbar && <div className="flex justify-end">{toolbar}</div>}
+      {(countLabel || toolbar) && (
+        <div className="flex items-center justify-between gap-3">
+          {countLabel ? <span className="text-xs text-slate-500">{countLabel}</span> : <span />}
+          {toolbar}
+        </div>
+      )}
       {isLoading && <Loading />}
       {error ? <ErrorState error={error} /> : null}
       {data && data.length === 0 && <EmptyState title={emptyTitle} />}
