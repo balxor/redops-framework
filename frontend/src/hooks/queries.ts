@@ -45,6 +45,7 @@ import type {
   ReportGenerateRequest,
   ReportUpdate,
   ScopeCreate,
+  ScopeUpdate,
   TelemetryCreate,
   TelemetryUpdate,
   UserCreate,
@@ -158,6 +159,19 @@ export function useCreateScope(projectId: string) {
     mutationFn: (body: ScopeCreate) => scopesApi.create(projectId, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: keys.scopes(projectId) });
+      qc.invalidateQueries({ queryKey: keys.safety(projectId) });
+    },
+  });
+}
+
+export function useUpdateScope(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ scopeId, body }: { scopeId: string; body: ScopeUpdate }) =>
+      scopesApi.update(projectId, scopeId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.scopes(projectId) });
+      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
       qc.invalidateQueries({ queryKey: keys.safety(projectId) });
     },
   });

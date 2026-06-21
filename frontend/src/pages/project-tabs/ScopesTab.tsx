@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/auth/useAuth";
-import { useCreateScope, useScopes } from "@/hooks/queries";
+import { useCreateScope, useScopes, useUpdateScope } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
 import { formatDate, humanize, statusTone } from "@/lib/format";
@@ -10,11 +10,31 @@ import type { Environment, ScopeRead, ScopeStatus, TargetType } from "@/types";
 
 export function ScopesTab({ projectId }: { projectId: string }) {
   const query = useScopes(projectId);
+  const update = useUpdateScope(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator");
+  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<ScopeRead>[] = [
-    { header: "Status", render: (s) => <Badge tone={statusTone(s.status)}>{humanize(s.status)}</Badge> },
+    {
+      header: "Status",
+      render: (s) =>
+        canUpdate ? (
+          <Select
+            value={s.status}
+            disabled={update.isPending}
+            onChange={(e) => update.mutate({ scopeId: s.scope_id, body: { status: e.target.value as ScopeStatus } })}
+          >
+            {SCOPE_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {humanize(status)}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <Badge tone={statusTone(s.status)}>{humanize(s.status)}</Badge>
+        ),
+    },
     { header: "Allowed targets", render: (s) => String(s.allowed_targets.length) },
     { header: "Restricted actions", render: (s) => String(s.restricted_actions.length) },
     { header: "Approval", render: (s) => (s.approval_required ? "Required" : "Not required") },
@@ -33,6 +53,7 @@ export function ScopesTab({ projectId }: { projectId: string }) {
         rowKey={(s) => s.scope_id}
         toolbar={canCreate ? <Button onClick={() => setOpen(true)}>Add scope</Button> : undefined}
       />
+      {update.error && <ErrorState error={update.error} />}
       <CreateScopeModal projectId={projectId} open={open} onClose={() => setOpen(false)} />
     </>
   );
