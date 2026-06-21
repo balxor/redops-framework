@@ -19,6 +19,9 @@ function StatCard({ label, value }: { label: string; value: number | string }) {
 export function DashboardPage() {
   const { user } = useAuth();
   const { data: projects, isLoading, error } = useProjects();
+  const recentProjects = [...(projects ?? [])].sort(
+    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+  );
 
   const byStatus = (status: ProjectRead["status"]) =>
     projects?.filter((p) => p.status === status).length ?? 0;
@@ -37,10 +40,11 @@ export function DashboardPage() {
 
       {projects && (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             <StatCard label="Total projects" value={projects.length} />
             <StatCard label="Active" value={byStatus("active")} />
             <StatCard label="Draft" value={byStatus("draft")} />
+            <StatCard label="Paused" value={byStatus("paused")} />
             <StatCard label="Completed" value={byStatus("completed")} />
           </div>
 
@@ -54,7 +58,7 @@ export function DashboardPage() {
                   No projects yet. Head to <Link to="/projects" className="text-brand-400 hover:underline">Projects</Link> to create one.
                 </p>
               )}
-              {projects.slice(0, 6).map((p) => (
+              {recentProjects.slice(0, 6).map((p) => (
                 <Link
                   key={p.project_id}
                   to={`/projects/${p.project_id}`}
