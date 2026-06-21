@@ -13,13 +13,19 @@ interface ResourceTableProps<T> {
   rowKey: (row: T) => string;
   emptyTitle: string;
   toolbar?: ReactNode;
+  rows?: T[];
 }
 
 // Generic list view driven by a query + column config. Used by every
 // read-only sub-resource tab to avoid duplicating fetch/empty/error logic.
-export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar }: ResourceTableProps<T>) {
+export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar, rows }: ResourceTableProps<T>) {
   const { data, isLoading, error } = query;
-  const countLabel = data ? `${data.length} ${data.length === 1 ? "record" : "records"}` : null;
+  const tableRows = rows ?? data;
+  const countLabel = tableRows
+    ? rows && data && rows.length !== data.length
+      ? `${rows.length} of ${data.length} records`
+      : `${tableRows.length} ${tableRows.length === 1 ? "record" : "records"}`
+    : null;
 
   return (
     <div className="space-y-4">
@@ -31,8 +37,8 @@ export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar }
       )}
       {isLoading && <Loading />}
       {error ? <ErrorState error={error} /> : null}
-      {data && data.length === 0 && <EmptyState title={emptyTitle} />}
-      {data && data.length > 0 && (
+      {tableRows && tableRows.length === 0 && <EmptyState title={emptyTitle} />}
+      {tableRows && tableRows.length > 0 && (
         <Card>
           <Table>
             <thead>
@@ -43,7 +49,7 @@ export function ResourceTable<T>({ query, columns, rowKey, emptyTitle, toolbar }
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-800">
-              {data.map((row) => (
+              {tableRows.map((row) => (
                 <tr key={rowKey(row)} className="hover:bg-ink-700/30">
                   {columns.map((c) => (
                     <Td key={c.header}>{c.render(row)}</Td>

@@ -1,11 +1,29 @@
+import { useMemo, useState } from "react";
 import { useAuditLogs } from "@/hooks/queries";
-import { Badge } from "@/components/ui";
+import { Badge, Input } from "@/components/ui";
 import { formatDateTime, humanize } from "@/lib/format";
 import { ResourceTable, type Column } from "./ResourceTable";
 import type { AuditLogRead } from "@/types";
 
 export function AuditTab({ projectId }: { projectId: string }) {
   const query = useAuditLogs(projectId);
+  const [search, setSearch] = useState("");
+  const filtered = useMemo(() => {
+    const value = search.trim().toLowerCase();
+    if (!value) return query.data;
+    return query.data?.filter((event) =>
+      [
+        event.action,
+        event.summary,
+        event.actor_user_id,
+        event.resource_type,
+        event.resource_id ?? "",
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(value),
+    );
+  }, [query.data, search]);
   const columns: Column<AuditLogRead>[] = [
     { header: "Time", render: (event) => formatDateTime(event.created_at) },
     { header: "Action", render: (event) => <Badge tone="blue">{humanize(event.action)}</Badge> },
@@ -14,5 +32,21 @@ export function AuditTab({ projectId }: { projectId: string }) {
     { header: "Resource", render: (event) => humanize(event.resource_type) },
   ];
 
-  return <ResourceTable query={query} columns={columns} emptyTitle="No audit events yet" rowKey={(event) => event.audit_log_id} />;
+  return (
+    <ResourceTable
+      query={query}
+      rows={filtered}
+      columns={columns}
+      emptyTitle={search ? "No matching audit events" : "No audit events yet"}
+      rowKey={(event) => event.audit_log_id}
+      toolbar={
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search audit"
+          className="w-64"
+        />
+      }
+    />
+  );
 }
