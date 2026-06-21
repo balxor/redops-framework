@@ -49,6 +49,7 @@ import type {
   TelemetryCreate,
   TelemetryUpdate,
   UserCreate,
+  UserUpdate,
 } from "@/types";
 
 export const keys = {
@@ -466,6 +467,14 @@ export function useCreateUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: UserCreate) => usersApi.create(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.users }),
+  });
+}
+
+export function useUpdateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, body }: { userId: string; body: UserUpdate }) => usersApi.update(userId, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.users }),
   });
 }

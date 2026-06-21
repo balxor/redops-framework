@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
-import { useCreateUser, useUsers } from "@/hooks/queries";
+import { useCreateUser, useUpdateUser, useUsers } from "@/hooks/queries";
 import { useAuth } from "@/auth/useAuth";
 import {
   Badge,
@@ -25,6 +25,7 @@ const ROLES: RoleName[] = ["admin", "lead_operator", "operator", "reviewer", "cl
 export function UsersPage() {
   const { hasRole } = useAuth();
   const { data: users, isLoading, error } = useUsers();
+  const update = useUpdateUser();
   const [open, setOpen] = useState(false);
 
   // Backend restricts /users to admins; guard the route client-side too.
@@ -72,7 +73,18 @@ export function UsersPage() {
                       ))}
                     </span>
                   </Td>
-                  <Td>{u.is_active ? <Badge tone="green">Active</Badge> : <Badge tone="red">Disabled</Badge>}</Td>
+                  <Td>
+                    <Select
+                      value={u.is_active ? "true" : "false"}
+                      disabled={update.isPending}
+                      onChange={(e) =>
+                        update.mutate({ userId: u.user_id, body: { is_active: e.target.value === "true" } })
+                      }
+                    >
+                      <option value="true">Active</option>
+                      <option value="false">Disabled</option>
+                    </Select>
+                  </Td>
                   <Td>{formatDateTime(u.last_login_at)}</Td>
                 </tr>
               ))}
@@ -80,6 +92,7 @@ export function UsersPage() {
           </Table>
         </Card>
       )}
+      {update.error && <ErrorState error={update.error} />}
 
       <CreateUserModal open={open} onClose={() => setOpen(false)} />
     </div>
