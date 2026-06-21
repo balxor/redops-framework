@@ -4,7 +4,6 @@ import {
   useCreateDetectionGap,
   useDetectionGaps,
   useTelemetry,
-  useUpdateDetectionGap,
 } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
@@ -16,10 +15,8 @@ import type { DetectionGapRead, DetectionGapType } from "@/types";
 export function DetectionGapsTab({ projectId }: { projectId: string }) {
   const query = useDetectionGaps(projectId);
   const telemetry = useTelemetry(projectId);
-  const update = useUpdateDetectionGap(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator", "reviewer");
-  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<DetectionGapRead>[] = [
     { header: "Status", render: (gap) => <Badge tone={statusTone(gap.status)}>{humanize(gap.status)}</Badge> },
@@ -27,21 +24,6 @@ export function DetectionGapsTab({ projectId }: { projectId: string }) {
     { header: "Summary", render: (gap) => <span className="font-medium text-slate-100">{gap.summary}</span> },
     { header: "Technique", render: (gap) => gap.attack_technique_id || "-" },
     { header: "Created", render: (gap) => formatDateTime(gap.created_at) },
-    {
-      header: "Actions",
-      render: (gap) =>
-        canUpdate && gap.status !== "resolved" && gap.status !== "closed" ? (
-          <Button
-            variant="secondary"
-            loading={update.isPending}
-            onClick={() => update.mutate({ gapId: gap.gap_id, body: { status: "resolved" } })}
-          >
-            Resolve
-          </Button>
-        ) : (
-          "-"
-        ),
-    },
   ];
 
   return (

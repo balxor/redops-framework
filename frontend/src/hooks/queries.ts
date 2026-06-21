@@ -28,7 +28,6 @@ import type {
   ApprovalDecision,
   CampaignCreate,
   DetectionGapCreate,
-  DetectionGapUpdate,
   EvidenceCreate,
   FindingCreate,
   LlmTaskCreate,
@@ -40,7 +39,6 @@ import type {
   ReportGenerateRequest,
   ScopeCreate,
   TelemetryCreate,
-  TelemetryUpdate,
   UserCreate,
 } from "@/types";
 
@@ -262,34 +260,10 @@ export function useCreateTelemetry(projectId: string) {
   });
 }
 
-export function useUpdateTelemetry(projectId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ telemetryId, body }: { telemetryId: string; body: TelemetryUpdate }) =>
-      telemetryApi.update(projectId, telemetryId, body),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: keys.telemetry(projectId) });
-      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
-    },
-  });
-}
-
 export function useCreateDetectionGap(projectId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: DetectionGapCreate) => detectionGapsApi.create(projectId, body),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: keys.detectionGaps(projectId) });
-      qc.invalidateQueries({ queryKey: keys.audit(projectId) });
-    },
-  });
-}
-
-export function useUpdateDetectionGap(projectId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ gapId, body }: { gapId: string; body: DetectionGapUpdate }) =>
-      detectionGapsApi.update(projectId, gapId, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: keys.detectionGaps(projectId) });
       qc.invalidateQueries({ queryKey: keys.audit(projectId) });

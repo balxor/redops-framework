@@ -6,7 +6,6 @@ import {
   useCreateTelemetry,
   useEvidence,
   useTelemetry,
-  useUpdateTelemetry,
 } from "@/hooks/queries";
 import { Badge, Button, ErrorState, Field, Input, Select, Textarea } from "@/components/ui";
 import { Modal } from "@/components/Modal";
@@ -20,10 +19,8 @@ export function TelemetryTab({ projectId }: { projectId: string }) {
   const actions = useActions(projectId);
   const assets = useAssets(projectId);
   const evidence = useEvidence(projectId);
-  const update = useUpdateTelemetry(projectId);
   const { hasRole } = useAuth();
   const canCreate = hasRole("admin", "lead_operator", "operator", "reviewer");
-  const canUpdate = canCreate;
   const [open, setOpen] = useState(false);
   const columns: Column<TelemetryRead>[] = [
     { header: "Status", render: (row) => <Badge tone={statusTone(row.detection_status)}>{humanize(row.detection_status)}</Badge> },
@@ -31,26 +28,6 @@ export function TelemetryTab({ projectId }: { projectId: string }) {
     { header: "Technique", render: (row) => row.attack_technique_id || "-" },
     { header: "Review note", render: (row) => <span className="font-medium text-slate-100">{row.review_note || "-"}</span> },
     { header: "Created", render: (row) => formatDateTime(row.created_at) },
-    {
-      header: "Actions",
-      render: (row) =>
-        canUpdate && row.detection_status !== "detected" ? (
-          <Button
-            variant="secondary"
-            loading={update.isPending}
-            onClick={() =>
-              update.mutate({
-                telemetryId: row.telemetry_id,
-                body: { detection_status: "detected", reviewed_at: new Date().toISOString() },
-              })
-            }
-          >
-            Mark detected
-          </Button>
-        ) : (
-          "-"
-        ),
-    },
   ];
 
   return (
