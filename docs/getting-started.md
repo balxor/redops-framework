@@ -158,4 +158,5 @@ Frontend settings use the `VITE_` prefix (see `frontend/.env.example`):
 - Backend internals and current API scope: `backend/README.md`
 - Frontend architecture and extension points: `frontend/README.md`, `frontend/docs/`
 - How the system is meant to work: `docs/overview.md`, `docs/product-scope.md`
+- Manual end-to-end verification: `docs/smoke-test-checklist.md`
 - Contributor and AI-agent conventions: `CONTRIBUTING.md`, `AGENTS.md`

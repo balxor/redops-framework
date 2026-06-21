@@ -420,6 +420,7 @@ See `docs/telemetry-model.md` for details.
 | `docs/telemetry-model.md` | Telemetry and detection feedback model |
 | `docs/data-model.md`      | Data entities and relationships        |
 | `docs/api.md`             | API proposal                           |
+| `docs/smoke-test-checklist.md` | Manual end-to-end verification checklist |
 | `docs/roadmap.md`         | Project roadmap                        |
 | `docs/glossary.md`        | Terminology                            |
 

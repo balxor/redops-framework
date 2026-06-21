@@ -344,6 +344,7 @@ Detailed documents are stored in `docs/`.
 | `docs/telemetry-model.md` | Detection feedback and telemetry mapping   |
 | `docs/data-model.md`      | Data entities and relationships            |
 | `docs/api.md`             | API structure proposal                     |
+| `docs/smoke-test-checklist.md` | Manual end-to-end verification checklist |
 | `docs/roadmap.md`         | Development roadmap                        |
 | `docs/glossary.md`        | Project terminology                        |
 

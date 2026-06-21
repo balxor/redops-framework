@@ -834,6 +834,7 @@ docs/integrations.md
 docs/telemetry-model.md
 docs/data-model.md
 docs/api.md
+docs/smoke-test-checklist.md
 docs/roadmap.md
 frontend/README.md
 ```
