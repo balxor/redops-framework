@@ -16,6 +16,29 @@ LLM output must be validated before it affects project workflow.
 
 ---
 
+## Current Implementation
+
+The current backend stores LLM-assisted work as project-scoped review records in
+`llm_tasks`.
+
+Implemented behavior:
+
+* Operators can record sanitized LLM-assisted draft output.
+* Each draft starts with status `under_review`.
+* Reviewers can accept or reject the draft.
+* Acceptance or rejection records reviewer identity, review note, review time,
+  and audit events.
+* Accepting a draft does not automatically create or modify a project artifact.
+
+Not implemented yet:
+
+* Direct calls to an LLM provider
+* Prompt template management
+* Automatic artifact creation from accepted drafts
+* Any direct execution or runner integration
+
+---
+
 ## Operating Model
 
 The framework separates LLM assistance from controlled validation workflow.
