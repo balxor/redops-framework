@@ -254,7 +254,6 @@ Approval is required for controlled, sensitive, and high-risk actions.
 Approval status values:
 
 ```text
-not_required
 pending
 approved
 rejected
@@ -270,13 +269,14 @@ project_id
 entity_type
 entity_id
 requested_by
-approved_by
+decided_by
 status
 risk_level
 reason
 conditions
+decision_note
 requested_at
-approved_at
+decided_at
 expires_at
 ```
 

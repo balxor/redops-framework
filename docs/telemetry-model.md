@@ -381,6 +381,7 @@ Detection gap fields:
 ```text
 gap_id
 project_id
+telemetry_id
 campaign_step_id
 finding_id
 attack_technique_id
@@ -389,6 +390,7 @@ summary
 impact
 recommendation
 evidence_id
+status
 created_by
 created_at
 ```
@@ -397,11 +399,13 @@ Example:
 
 ```yaml
 detection_gap:
+  telemetry_id: telemetry-001
   gap_type: incomplete_telemetry
   technique_id: T1057
   summary: process creation telemetry was observed, but command execution context was not available
   impact: investigation context may be incomplete
   recommendation: review endpoint logging policy and SIEM parsing
+  status: open
 ```
 
 ---
