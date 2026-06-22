@@ -1,8 +1,11 @@
 # RedOps Backend
 
-FastAPI backend skeleton for RedOps Framework.
+FastAPI backend for RedOps Framework.
 
-This implementation provides the first API surface for projects, scopes, assets, campaigns, ATT&CK techniques, and health checks.
+This implementation provides the API surface for projects, scopes, assets,
+campaigns, actions, evidence, findings, reports, approvals, audit logs,
+telemetry review, detection gaps, LLM-assisted draft review, ATT&CK techniques,
+and health checks.
 
 The application uses SQLAlchemy for persistence and Alembic for database migrations. SQLite is used by default for local development. Docker Compose runs PostgreSQL.
 
@@ -58,12 +61,18 @@ Implemented:
 * Evidence metadata API
 * Finding management API
 * Report metadata API
+* Report outline generation
+* Approval workflow API
+* Audit log API
+* LLM-assisted draft review API
+* Telemetry review API
+* Detection gap API
+* Operational update and removal tests
 
 Not implemented yet:
 
 * Fine-grained permission matrix
 * Evidence file upload and storage
 * Report rendering and export
-* Report rendering
 * External tool integration
 * LLM workflow execution
