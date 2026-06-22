@@ -343,7 +343,7 @@ Detailed documents are stored in `docs/`.
 | `docs/safety-model.md`    | Scope, approval, policy, and audit control |
 | `docs/telemetry-model.md` | Detection feedback and telemetry mapping   |
 | `docs/data-model.md`      | Data entities and relationships            |
-| `docs/api.md`             | API structure proposal                     |
+| `docs/api.md`             | API structure and implementation reference |
 | `docs/smoke-test-checklist.md` | Manual end-to-end verification checklist |
 | `docs/roadmap.md`         | Development roadmap                        |
 | `docs/glossary.md`        | Project terminology                        |
@@ -452,7 +452,7 @@ examples/finding.example.md
 examples/report-outline.example.md
 ```
 
-Run the initial backend API skeleton:
+Run the backend API:
 
 ```bash
 cd backend
@@ -565,7 +565,7 @@ Contributions are welcome in the following areas:
 * LLM assistance model
 * ATT&CK registry design
 * Telemetry model
-* API proposal
+* API and workflow implementation
 
 Contribution rules:
 

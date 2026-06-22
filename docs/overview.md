@@ -54,9 +54,11 @@ All activity must be performed inside approved scope and rules of engagement.
 
 ## Project Scope
 
-RedOps Framework is documentation-first in the initial version.
+RedOps Framework is documentation-first, with the product model and safety
+boundaries leading implementation.
 
-The current scope is to define:
+The current repository includes the core documentation set plus an implemented
+backend API and frontend console for the primary workflow. The scope remains:
 
 * Product model
 * Component model
@@ -65,12 +67,12 @@ The current scope is to define:
 * Data model
 * ATT&CK registry model
 * Telemetry model
-* API proposal
+* API implementation reference
 * Example files
 * Templates
 * Roadmap
 
-Implementation work should follow after the core model is reviewed.
+Implementation work should continue to follow the reviewed core model.
 
 ---
 
@@ -419,7 +421,7 @@ See `docs/telemetry-model.md` for details.
 | `docs/safety-model.md`    | Safety model                           |
 | `docs/telemetry-model.md` | Telemetry and detection feedback model |
 | `docs/data-model.md`      | Data entities and relationships        |
-| `docs/api.md`             | API proposal                           |
+| `docs/api.md`             | API structure and implementation notes |
 | `docs/smoke-test-checklist.md` | Manual end-to-end verification checklist |
 | `docs/roadmap.md`         | Project roadmap                        |
 | `docs/glossary.md`        | Terminology                            |
