@@ -301,25 +301,27 @@ v1.0 is complete when:
 
 ## Implementation Phase
 
-Implementation should start after the documentation model is reviewed.
+Implementation has started alongside the documentation model. Current code
+includes a FastAPI backend, SQLAlchemy/Alembic persistence, Docker Compose,
+and a React + Vite frontend console for the core workflow.
 
 Suggested implementation sequence:
 
-1. Backend API skeleton
-2. Database schema
-3. Project and scope module
-4. Asset registry
-5. ATT&CK registry
-6. Campaign planner
-7. Action log
-8. Evidence vault
-9. Finding manager
-10. Report builder
-11. Safety gate
-12. Web console (React + Vite frontend, see `frontend/`)
-13. LLM-assisted workflow
-14. Safe validation workflow
-15. Telemetry feedback
+1. Backend API skeleton — implemented
+2. Database schema — implemented
+3. Project and scope module — implemented
+4. Asset registry — implemented
+5. ATT&CK registry lookup — implemented as a local reference catalog
+6. Campaign planner — implemented
+7. Action log — implemented
+8. Evidence metadata vault — implemented
+9. Finding manager — implemented
+10. Report builder outline generation — implemented
+11. Safety gate — implemented for approved scope, allowlist, and approvals
+12. Web console (React + Vite frontend, see `frontend/`) — implemented
+13. LLM-assisted draft review — implemented as review-gated records
+14. Telemetry feedback — implemented
+15. Safe validation workflow — future scope
 
 ---
 
@@ -419,11 +421,10 @@ v0.1 Community Draft
 Current priority:
 
 ```text
-README.md
-SECURITY.md
-CONTRIBUTING.md
-docs/roadmap.md
-docs/safety-model.md
-docs/llm-assistance.md
-docs/architecture.md
+documentation consistency
+local verification
+smoke testing
+backend coverage
+frontend workflow polish
+future safe validation workflow design
 ```
