@@ -37,6 +37,11 @@ The data model covers:
 
 This document is implementation-neutral. Future implementation may use SQL, document storage, or hybrid storage.
 
+The current backend implementation uses SQLAlchemy models in `backend/app/models`
+with JSON fields for structured metadata and list-like fields. Some sections
+below keep future entities for product planning; implemented fields are mirrored
+in `frontend/src/types/index.ts`.
+
 ---
 
 ## Entity List
@@ -616,9 +621,9 @@ Campaign status values:
 
 ```text
 draft
-pending_approval
+planned
 approved
-in_progress
+active
 completed
 cancelled
 ```
@@ -737,6 +742,17 @@ detection_validation_note
 cleanup_note
 ```
 
+Action result values:
+
+```text
+unknown
+planned
+approved
+executed
+skipped
+failed
+```
+
 Detection status values:
 
 ```text
@@ -783,6 +799,7 @@ file_size
 mime_type
 file_hash_sha256
 description
+sanitized
 captured_at
 uploaded_at
 created_at
@@ -1100,13 +1117,14 @@ project_id
 entity_type
 entity_id
 requested_by
-approved_by
+decided_by
 status
 risk_level
 reason
 conditions
+decision_note
 requested_at
-approved_at
+decided_at
 expires_at
 created_at
 updated_at
@@ -1115,7 +1133,6 @@ updated_at
 Approval status values:
 
 ```text
-not_required
 pending
 approved
 rejected
@@ -1130,18 +1147,14 @@ standard
 controlled
 sensitive
 high_risk
-forbidden
 ```
 
 Entity type values:
 
 ```text
-scope
 campaign
-campaign_step
-action
-validation_workflow
-llm_output
+action_type
+scope
 policy_exception
 ```
 
@@ -1257,8 +1270,6 @@ cleanup_checklist
 Status values:
 
 ```text
-requested
-generated
 under_review
 accepted
 rejected
