@@ -12,7 +12,37 @@ This document defines the initial API proposal for RedOps Framework.
 
 The API supports project management, scope management, asset registry, ATT&CK registry, campaign planning, action logs, evidence, findings, reports, telemetry, approvals, audit logs, and LLM-assisted workflow.
 
-This document is a design draft. It is not an implementation contract yet.
+This document is a design draft and product-level API reference. The current
+FastAPI implementation follows the same resource model but uses project-scoped
+routes for project resources.
+
+For the current frontend-to-backend endpoint map, see
+`frontend/docs/API_MAPPING.md`.
+
+---
+
+## Current Implementation Note
+
+The implemented backend uses `/api/v1` as the base path and nests most project
+resources under a project:
+
+```http
+/api/v1/projects/{project_id}/scopes
+/api/v1/projects/{project_id}/assets
+/api/v1/projects/{project_id}/campaigns
+/api/v1/projects/{project_id}/actions
+/api/v1/projects/{project_id}/evidence
+/api/v1/projects/{project_id}/findings
+/api/v1/projects/{project_id}/reports
+/api/v1/projects/{project_id}/approvals
+/api/v1/projects/{project_id}/audit
+/api/v1/projects/{project_id}/llm/tasks
+/api/v1/projects/{project_id}/telemetry
+/api/v1/projects/{project_id}/detection-gaps
+```
+
+Some sections below still describe future or proposal endpoints, such as import,
+file download, and future validation workflow routes.
 
 ---
 
