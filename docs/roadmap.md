@@ -307,7 +307,7 @@ and a React + Vite frontend console for the core workflow.
 
 Suggested implementation sequence:
 
-1. Backend API skeleton — implemented
+1. Backend API foundation — implemented
 2. Database schema — implemented
 3. Project and scope module — implemented
 4. Asset registry — implemented

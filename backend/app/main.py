@@ -10,7 +10,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="API skeleton for RedOps Framework.",
+        description="Workflow and recordkeeping API for RedOps Framework.",
     )
     app.include_router(api_router, prefix=settings.api_v1_prefix)
 
