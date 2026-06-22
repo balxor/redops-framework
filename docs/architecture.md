@@ -10,9 +10,13 @@ Project: RedOps Framework
 
 This document describes the architecture of RedOps Framework.
 
-The architecture covers the main system components, data flow, safety controls, LLM assistance, telemetry review, and future implementation layers.
+The architecture covers the main system components, data flow, safety controls,
+LLM assistance, telemetry review, and future implementation layers.
 
-The framework starts as a documentation-first model. Implementation should follow after the product scope, data model, safety model, and workflow are reviewed.
+The framework started as a documentation-first model. The current repository now
+includes a FastAPI backend, React frontend, database models, migrations, and
+tests for the core workflow. Future changes should still follow the product
+scope, data model, safety model, and workflow documents.
 
 ---
 
@@ -31,8 +35,8 @@ The architecture supports the following goals:
 * Generate reports
 * Record audit logs
 * Support LLM-assisted planning and reporting
+* Support telemetry and detection feedback review
 * Support future safe validation workflow
-* Support future telemetry and detection feedback
 
 ---
 
@@ -875,29 +879,33 @@ Execution-related work must remain scope-bound, approval-controlled, and audit-l
 
 ## API Boundary
 
-Initial API groups:
+Current API groups are implemented under the versioned backend API and exposed
+to the frontend through `frontend/src/api/resources.ts` and
+`frontend/docs/API_MAPPING.md`.
 
 ```text
 /auth
 /users
 /projects
-/scopes
-/assets
 /attack
-/campaigns
-/actions
-/evidence
-/findings
-/reports
-/audit-logs
+/projects/{project_id}/scopes
+/projects/{project_id}/assets
+/projects/{project_id}/campaigns
+/projects/{project_id}/actions
+/projects/{project_id}/evidence
+/projects/{project_id}/findings
+/projects/{project_id}/reports
+/projects/{project_id}/approvals
+/projects/{project_id}/audit-logs
+/projects/{project_id}/llm-tasks
+/projects/{project_id}/telemetry
+/projects/{project_id}/detection-gaps
 ```
 
 Future API groups:
 
 ```text
-/llm
 /policy
-/telemetry
 /imports
 /validation-workflows
 ```
